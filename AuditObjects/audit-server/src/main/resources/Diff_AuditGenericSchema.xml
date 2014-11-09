@@ -1,0 +1,56 @@
+<entity id="pinnamas" type="user" operation="UPDATE">
+	<!-- attributes -->
+	<attribute name="uid" value="pinnamas"/>
+	<attribute name="fName" value="Sateesh"/>
+	<attribute name="lName" value="Pinnamaneni" value_#old="xyz"/>
+	
+	<!-- entities -->
+	<attribute name="wife">
+		<entity id="moturia" type="user" id_#old="abc"/>
+	</attribute>
+	<attribute name="sibling">
+		<entity id="sundeepp" type="user"/>
+	</attribute>
+	
+	<!-- value objects -->
+	<attribute name="address">
+		<valueObject>
+			<attribute name="firstLine" value="11 Noble Court" value_#old="26 Noble Court"/>
+			<attribute name="postcode" value="SL2 5DP"/>
+			<attribute name="town">
+				<entity id="slough" type="place"/>
+			</attribute>
+		</valueObject>
+	</attribute>
+
+	<!-- collection of attributes -->
+	<attribute name="yearsInEmployment">
+		<collection>
+			<attribute value="2004"/>
+			<attribute value="2005"/>
+			<attribute value="2007"/>
+			<attribute value="2009"/>
+		</collection>
+	</attribute>
+	
+	<attribute name="friends">
+		<collection>
+			<entity id="rajeshsv" type="user"/>
+			<entity id="rameshr" type="user"/>
+		</collection>
+	</attribute>
+	
+	<attribute name="previousAddresses">
+		<collection>
+			<valueObject>
+				<attribute name="firstLine" value="26 Noble Court"/>
+				<attribute name="postcode" value="SL2 5DP"/>
+			</valueObject>
+			
+			<valueObject>
+				<attribute name="firstLine" value="30 Loxly House"/>
+				<attribute name="postcode" value="HA9 7HL"/>
+			</valueObject>
+		</collection>
+	</attribute>
+</entity>

@@ -1,0 +1,61 @@
+<entity name="user">
+	<!-- default primitives for entities-->
+	<primitive name="id" value="pinnamas"/>
+	<primitive name="type" value="user"/>
+
+	<!-- primitives -->
+	<primitive name="uid" value="pinnamas"/>
+	<primitive name="fName" value="Sateesh"/>
+	<primitive name="lName" value="Pinnamaneni"/>
+	
+	<!-- entities -->
+	<entity name="wife">
+		<primitive name="id" value="moturia"/>
+		<primitive name="type" value="user"/>
+	</entity>
+	<entity name="sibling">
+		<primitive name="id" value="sandeepp"/>
+		<primitive name="type" value="user"/>
+	</entity>
+
+	<!-- value objects -->
+	<valueObject name="address">
+		<primitive name="firstLine" value="11 Noble Court"/>
+		<primitive name="postcode" value="SL2 5DP"/>
+		<entity name="town">
+			<primitive name="id" value="slough"/>
+			<primitive name="type" value="place"/>
+		</entity>
+	</valueObject>
+
+	<!-- collection of primitives -->
+	<collection name="yearsInEmployment">
+		<primitive value="2004"/>
+		<primitive value="2005"/>
+		<primitive value="2007"/>
+		<primitive value="2009"/>
+	</collection>
+	
+	<collection name="friends">
+		<entity>
+			<primitive name="id" value="rajeshsv"/>
+			<primitive name="type" value="place"/>
+		</entity>
+		<entity>
+			<primitive name="id" value="rameshr"/>
+			<primitive name="type" value="place"/>
+		</entity>
+	</collection>
+	
+	<collection name="previousAddresses">
+		<valueObject>
+			<primitive name="firstLine" value="26 Noble Court"/>
+			<primitive name="postcode" value="SL2 5DP"/>
+		</valueObject>
+		
+		<valueObject>
+			<primitive name="firstLine" value="30 Loxly House"/>
+			<primitive name="postcode" value="HA9 7HL"/>
+		</valueObject>
+	</collection>
+</entity>
