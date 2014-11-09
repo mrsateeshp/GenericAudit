@@ -1,13 +1,14 @@
-{user: {
-			id:'pinnamas', 
-			uid:'pinnamas',
-			fname:'sateesh',
-			fname_^old:'xyz',
-			wife:{id:'moturia', id_^old:'abc', eType:'user'},
-			address:{firstLine:'', firstLine_^old:'', postcode:'', town:{id='slough', type: 'town'}},
-			yearsInEmployment:['2004','2005','2006'],
-			yearsInEmployment_old:['2004','2005','2006'],
-			friends:[{id:'rajeshsv', type:'user'},{id:'rameshr', type:'user'}],
-			previousAddresses:[{firstLine:'', postcode:''}, {firstLine:'', postcode:''}]
+{"user": {
+			"id":"pinnamas",
+			"type":"user",
+			"uid":"pinnamas",
+			"fname":"sateesh",
+			"fname__old":"xyz",
+			"wife":{"id":"moturia", "id__old":"abc", "type":"user"},
+			"address":{"firstLine":"", "firstLine__old":"", "postcode":"", "town":{"id":"slough", "type": "town"}},
+			"yearsInEmployment":["2004","2005","2006"],
+			"yearsInEmployment_old":["2004","2005","2006"],
+			"friends":[{"id":"rajeshsv", "type":"user"},{"id":"rameshr", "type":"user"}],
+			"previousAddresses":[{"firstLine":"", "postcode":""}, {"firstLine":"", "postcode":""}]
 		}
 }

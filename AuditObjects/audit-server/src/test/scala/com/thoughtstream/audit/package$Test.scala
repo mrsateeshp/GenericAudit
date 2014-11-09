@@ -15,4 +15,9 @@ class package$Test extends FunSuite {
     val input = XML.loadFile("C:\\Sateesh\\Dropbox\\Development\\AuditObjects\\audit-server\\src\\main\\resources\\AuditGenericSchema.xml")
     println(findAllAuditableXpaths(input))
   }
+
+  test("testing primitive values"){
+    val input = XML.loadFile("C:\\Sateesh\\Dropbox\\Development\\AuditObjects\\audit-server\\src\\main\\resources\\AuditGenericSchema.xml")
+    println(findAllPrimitiveValuesWithXpath(input))
+  }
 }
