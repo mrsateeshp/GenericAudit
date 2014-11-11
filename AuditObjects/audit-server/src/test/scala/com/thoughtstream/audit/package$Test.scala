@@ -11,13 +11,16 @@ import scala.xml.XML
  */
 class package$Test extends FunSuite {
 
-  test("testing indexes"){
-    val input = XML.loadFile("C:\\Sateesh\\Dropbox\\Development\\AuditObjects\\audit-server\\src\\main\\resources\\AuditGenericSchema.xml")
-    println(findAllAuditableXpaths(input))
-  }
+  test("testing 'findAllAuditableXpaths' with only primitives"){
+    val input = <entity name="user">
+      <primitive name="id" value="pinnamas"/>
+      <primitive name="type" value="user"/> </entity>
+    val result = findAllAuditableXpaths(input)
 
-  test("testing primitive values"){
-    val input = XML.loadFile("C:\\Sateesh\\Dropbox\\Development\\AuditObjects\\audit-server\\src\\main\\resources\\AuditGenericSchema.xml")
-    println(findAllPrimitiveValuesWithXpath(input))
+    assert(result.size == 3)
+
+    assert(result.exists(x => x._1.equals("/user")))
+    assert(result.get("/user/id").isDefined)
+    assert(result.get("/user/type").isDefined)
   }
 }

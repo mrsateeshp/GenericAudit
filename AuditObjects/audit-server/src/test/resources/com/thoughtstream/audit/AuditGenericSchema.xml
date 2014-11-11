@@ -30,30 +30,30 @@
 
 	<!-- collection of primitives -->
 	<collection name="yearsInEmployment">
-		<primitive value="2004"/>
-		<primitive value="2005"/>
-		<primitive value="2007"/>
-		<primitive value="2009"/>
+		<primitive name="1" value="2004"/>
+		<primitive name="2" value="2005"/>
+		<primitive name="3" value="2007"/>
+		<primitive name="4" value="2009"/>
 	</collection>
 	
 	<collection name="friends">
-		<entity>
+		<entity name="1">
 			<primitive name="id" value="rajeshsv"/>
 			<primitive name="type" value="place"/>
 		</entity>
-		<entity>
+		<entity name="2">
 			<primitive name="id" value="rameshr"/>
 			<primitive name="type" value="place"/>
 		</entity>
 	</collection>
 	
 	<collection name="previousAddresses">
-		<valueObject>
+		<valueObject name="1">
 			<primitive name="firstLine" value="26 Noble Court"/>
 			<primitive name="postcode" value="SL2 5DP"/>
 		</valueObject>
 		
-		<valueObject>
+		<valueObject name="2">
 			<primitive name="firstLine" value="30 Loxly House"/>
 			<primitive name="postcode" value="HA9 7HL"/>
 		</valueObject>
