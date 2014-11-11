@@ -2,8 +2,6 @@ package com.thoughtstream.audit
 
 import org.scalatest.FunSuite
 
-import scala.xml.XML
-
 /**
  *
  * @author Sateesh

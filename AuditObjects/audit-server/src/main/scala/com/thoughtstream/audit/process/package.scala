@@ -18,7 +18,7 @@ package object process {
     val nameAttribute = element.attribute("name")
     //ignore the element that does not have name attribute. name is mandatory.
     if (nameAttribute.isEmpty) {
-      if(nextElements.isEmpty) return result else extractVariablesWithXpaths(nextElements,withInitialXpath,result)
+      if (nextElements.isEmpty) return result else extractVariablesWithXpaths(nextElements, withInitialXpath, result)
     }
 
     val xpathIncludingThisElem = withInitialXpath + nameAttribute.get.text
@@ -27,20 +27,15 @@ package object process {
     // + this_element + all_child_elements)
     val thisElementTotalResult = if (element.child.isEmpty) {
       //leaf element --> mostly primitive
-      val value = element.attribute("value")
-      if(element.label.equals("primitive") && value.isDefined) {
-        val numericAtt = element.attribute("numeric")
-        val isNumeric = if(numericAtt.isDefined) {
-          numericAtt.get.text.equalsIgnoreCase("true")
-        } else false
+      element.label match {
+        case Primitive(true) if element.attribute("value").isDefined =>
+          result + (xpathIncludingThisElem -> constructVariableType(element))
 
-        result + (xpathIncludingThisElem -> Primitive(value.get.text, isNumeric))
-      } else {
         //else ignore the item
-        result
+        case _ => result
       }
     } else {
-      val resultPlusThisElementXpath = result + (xpathIncludingThisElem -> getComplexTypeFromElementLabel(element.label).asInstanceOf[VariableType])
+      val resultPlusThisElementXpath = result + (xpathIncludingThisElem -> constructComplexType(element))
       //exercising all child elements
       val childElements = element.child.collect {
         case x: Elem => x

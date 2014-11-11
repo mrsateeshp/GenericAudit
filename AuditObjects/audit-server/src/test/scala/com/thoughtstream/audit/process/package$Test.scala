@@ -94,5 +94,16 @@ class package$Test extends FunSuite {
     assert(result.get("/user/address/town/eType").get === Primitive("place"))
   }
 
+//  Edge test case
+  test("testing 'extractVariablesWithXpaths' with no value for primitive"){
+    val input = <entity name="user">
+      <primitive name="eId"/>
+    </entity>
+
+    val result = extractVariablesWithXpaths(input)
+
+    assert(result.size == 1)
+    assert(result.get("/user").get.isInstanceOf[Entity])
+  }
 
 }
