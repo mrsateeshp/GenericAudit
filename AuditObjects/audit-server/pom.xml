@@ -19,11 +19,17 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <scala.version>2.10.4</scala.version>
+        <scala.major.version>2.10</scala.major.version>
+        <scala.version>${scala.major.version}.4</scala.version>
         <spring.version>3.0.5.RELEASE</spring.version>
     </properties>
 	
     <dependencies>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>casbah_${scala.major.version}</artifactId>
+            <version>2.7.4</version>
+        </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -31,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.10</artifactId>
+            <artifactId>scalatest_${scala.major.version}</artifactId>
             <version>2.2.2</version>
             <scope>test</scope>
         </dependency>
@@ -45,6 +51,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-native_${scala.major.version}</artifactId>
+            <version>3.2.11</version>
         </dependency>
     </dependencies>
 

@@ -7,12 +7,14 @@ import scala.xml.Elem
  * @author Sateesh
  * @since 07/11/2014
  */
-package object audit {
 
+package object audit {
+  @deprecated
   def findAllPrimitiveValuesWithXpath(element: Elem, withInitialXpath: String = "/", result: Map[String, String] = Map()): Map[String, String] = {
     findAllPrimitiveValuesWithXpath(Seq(element), withInitialXpath, result)
   }
 
+  @deprecated
   def findAllPrimitiveValuesWithXpath(elements: Seq[Elem], withInitialXpath: String, result: Map[String, String]): Map[String, String] = {
     val element = elements.head
     val nextElements = elements.tail
@@ -49,10 +51,12 @@ package object audit {
     }
   }
 
+  @deprecated
   def findAllAuditableXpaths(element: Elem, withInitialXpath: String = "/", result: Map[String, String] = Map()): Map[String, String] = {
     findAllAuditableXpaths(Seq(element), withInitialXpath, result)
   }
 
+  @deprecated
   def findAllAuditableXpaths(elements: Seq[Elem], withInitialXpath: String, result: Map[String, String]): Map[String, String] = {
     val element = elements.head
     val nextElements = elements.tail

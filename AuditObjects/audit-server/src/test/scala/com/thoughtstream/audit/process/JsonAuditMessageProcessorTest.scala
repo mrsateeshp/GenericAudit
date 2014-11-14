@@ -1,14 +1,58 @@
 package com.thoughtstream.audit.process
 
-import com.thoughtstream.audit.domain.{Collection, ValueObject, Primitive, Entity}
+import com.thoughtstream.audit.domain.{Collection, ValueObject, Entity, Primitive}
 import org.scalatest.FunSuite
 
 /**
  *
  * @author Sateesh
- * @since 10/11/2014
+ * @since 12/11/2014
  */
-class package$Test extends FunSuite {
+class JsonAuditMessageProcessorTest extends FunSuite {
+
+  import JsonAuditMessageProcessor._
+
+  test("Testing performDiffAndMerge"){
+    val oldObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="123" numeric="true"/>
+      <primitive name="uidWife" value="123" numeric="true"/>
+    </entity>
+    val newObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="456" numeric="true"/>
+      <primitive name="uidWife" value="123" numeric="true"/>
+    </entity>
+
+    var result = performDiffAndMerge(oldObj, newObj)
+
+    assert(result.size == 6)
+
+    assert(result.head._1.equals("/user"))
+    assert(result.head._2.isInstanceOf[Entity])
+
+    result = result.tail
+    assert(result.head._1.equals("/user/eId"))
+    assert(result.head._2 === Primitive("johnf", false))
+
+    result = result.tail
+    assert(result.head._1.equals("/user/eType"))
+    assert(result.head._2 === Primitive("user"))
+
+    result = result.tail
+    assert(result.head._1.equals("/user/uid"))
+    assert(result.head._2 === Primitive("456", true))
+
+    result = result.tail
+    assert(result.head._1.equals("/user/uid__old"))
+    assert(result.head._2 === Primitive("123", true))
+
+    result = result.tail
+    assert(result.head._1.equals("/user/uidWife"))
+    assert(result.head._2 === Primitive("123", true))
+  }
 
   test("testing 'extractVariablesWithXpaths' with only primitives") {
     val input = <entity name="user">
@@ -16,7 +60,7 @@ class package$Test extends FunSuite {
       <primitive name="eType" value="user"/>
       <primitive name="uid" value="123" numeric="true"/>
       <!--with no "name" attribute-->
-      <primitive name="uid" value="123" numeric="true"/>
+      <primitive value="123" numeric="true"/>
     </entity>
 
     val result = extractVariablesWithXpaths(input)
@@ -252,5 +296,4 @@ class package$Test extends FunSuite {
     assert(result.get("/user/previousAddresses/2/firstLine").get === Primitive("23 June St", false))
     assert(result.get("/user/previousAddresses/2/postcode").get === Primitive("MH4 8FD", false))
   }
-
 }
