@@ -4,7 +4,7 @@ import com.github.simplyscala.{MongodProps, MongoEmbedDatabase}
 import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.bean.MongoDB
-import com.thoughtstream.audit.process.JsonAuditMessageProcessor
+import com.thoughtstream.audit.process.{SimpleMongoQueryBuilder, JsonAuditMessageProcessor}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.json4s.native.JsonMethods._
 
@@ -24,6 +24,36 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
   val serviceEndpoint = ("localhost",27017)
   val databaseName = "AuditObjects"
+
+  test("first record save to & retrieve from MongoDb") {
+    val processor = JsonAuditMessageProcessor
+    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+
+    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+
+    val oldObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="123" numeric="true"/>
+      <primitive name="uidWife" value="123" numeric="true"/>
+    </entity>
+    val newObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="456" numeric="true"/>
+      <primitive name="uidWife" value="123" numeric="true"/>
+    </entity>
+
+    consumer.save(processor.process(newObj, oldObj))
+    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName) with SimpleMongoQueryBuilder
+
+    val result = searchService.search("/user/abc")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    //tear down
+    collection.remove(MongoDBObject())
+  }
 
   test("first record save to MongoDb") {
     val processor = JsonAuditMessageProcessor
@@ -45,7 +75,9 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     </entity>
 
     consumer.save(processor.process(newObj, oldObj))
-    val userOptional = collection.findOne(JSON.parse("{'user.eId': 'johnf'}").asInstanceOf[DBObject])
+//    val userOptional = collection.findOne(JSON.parse("{'user.eId': 'johnf'}").asInstanceOf[DBObject])
+//    val userOptional = collection.findOne(JSON.parse("{ $and: [{'user.uid': 456}, {'user.uid__old': 123}]}").asInstanceOf[DBObject])
+    val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
 
     val result = parse(userOptional.get.toString)
     assert((result \ "user" \ "eId").values === "johnf")
