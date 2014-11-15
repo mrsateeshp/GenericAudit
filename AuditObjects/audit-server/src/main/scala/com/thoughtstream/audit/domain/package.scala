@@ -16,7 +16,9 @@ package object domain {
         val numericAtt = element.attribute("numeric")
         val isNumeric = if (numericAtt.isDefined) {
           numericAtt.get.text.equalsIgnoreCase("true")
-        } else false
+        } else {
+          Utils.isNumeric(value)
+        }
 
         Primitive(value, isNumeric)
 

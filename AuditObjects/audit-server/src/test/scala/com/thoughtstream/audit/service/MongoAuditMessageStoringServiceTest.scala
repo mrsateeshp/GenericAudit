@@ -4,7 +4,7 @@ import com.github.simplyscala.{MongodProps, MongoEmbedDatabase}
 import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.bean.MongoDB
-import com.thoughtstream.audit.process.{SimpleMongoQueryBuilder, JsonAuditMessageProcessor}
+import com.thoughtstream.audit.process.JsonAuditMessageProcessor
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.json4s.native.JsonMethods._
 
@@ -45,9 +45,20 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     </entity>
 
     consumer.save(processor.process(newObj, oldObj))
-    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName) with SimpleMongoQueryBuilder
+    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
 
-    val result = searchService.search("/user/abc")
+    var result = searchService.search("/user/uidWife=123&&/user/eId=johnf")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user/uidWife=123&&/user/eId=johnf12")
+    assert(result.size === 0)
+
+    result = searchService.search("/user/uidWife=123++/user/eId=johnf")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user/uidWife=123++/user/eId=johnf12")
     assert(result.size === 1)
     println(pretty(render(result.head)))
 

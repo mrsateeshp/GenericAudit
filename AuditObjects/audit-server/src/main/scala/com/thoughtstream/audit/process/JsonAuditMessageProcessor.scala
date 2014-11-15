@@ -53,12 +53,12 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
       val value = x._2.asInstanceOf[Primitive]
       val newValueOption = newObjectDataMap.get(key)
       if(newValueOption.isEmpty) {
-        mergedObjectDataMap += (key + "__old" -> value)
+        mergedObjectDataMap += (key + postfixForOldPrimitiveValue -> value)
         mergedObjectDataMap += (key -> Primitive(""))
       }else {
         val newValue = newObjectDataMap(key).asInstanceOf[Primitive]
         if (!value.value.equals(newValue.value)) {
-          mergedObjectDataMap += (key + "__old" -> value)
+          mergedObjectDataMap += (key + postfixForOldPrimitiveValue -> value)
         }
       }
     })
