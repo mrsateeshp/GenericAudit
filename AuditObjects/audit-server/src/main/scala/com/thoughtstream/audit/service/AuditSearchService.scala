@@ -26,8 +26,17 @@ class MongoBasedAuditSearchService
 
   override def search(query: SearchQuery, startIndex: Int, noOfResults: Int): Iterable[JValue] = {
     val jsonQuery = build(query)
+
     println("Json Query: " + jsonQuery)
-    val cursor = collection.find(JSON.parse(jsonQuery).asInstanceOf[DBObject]).skip(startIndex).limit(noOfResults)
+    val dbQuery = JSON.parse(jsonQuery).asInstanceOf[DBObject]
+
+    /*todo: example of how to enable data range queries
+    val and = new BasicDBList()
+    and.add(dbQuery)
+    and.add(new BasicDBObject("auditInfo.when", new BasicDBObject("$gte", new Date(1310669017000l)).append("$lt", new Date(1310669019000l))))
+    val finalQuery = new BasicDBObject("$and", and)*/
+
+    val cursor = collection.find(dbQuery).skip(startIndex).limit(noOfResults)
 
     cursor.map(x => parse(x.toString)).toIterable
   }
