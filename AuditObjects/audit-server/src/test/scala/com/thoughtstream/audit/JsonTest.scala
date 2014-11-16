@@ -9,6 +9,8 @@ import org.scalatest.FunSuite
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods._
 
+import scala.util.matching.Regex
+
 /**
  *
  * @author Sateesh
@@ -17,6 +19,9 @@ import org.json4s.native.JsonMethods._
 @deprecated
 class JsonTest extends FunSuite{
 
+  test("sample") {
+
+  }
   /*def convertToJson(source: Map[String, VariableType]): JValue = {
 
     val (key,value) = source.head

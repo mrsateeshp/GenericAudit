@@ -13,6 +13,19 @@ import com.thoughtstream.audit.process.QueryOperator.QueryOperator
 
 trait SearchQueryBuilder {
 
+  def createQueryForXpath(xpath: String): SearchQuery = {
+    require(xpath != null && xpath.trim.length > 1 && xpath.trim.startsWith("/"), "Xpath can not be null or empty or just '/' for the PrimitiveQuery!")
+
+    val firstElement = xpath.substring(1).split("/")(0)
+    val nameValuePair = firstElement.split("=")
+    if (nameValuePair.length > 1) {
+      val (name, value) = (nameValuePair(0), nameValuePair(1))
+      new CompositeQuery(PrimitiveQuery("/" + name + "/eId=" + value), QueryOperator.And, PrimitiveQuery(xpath.replace("/" + firstElement, "/" + name)))
+    } else {
+      new PrimitiveQuery(xpath)
+    }
+  }
+
   def createCompositeQuery(queries: Seq[SearchQuery], operator: QueryOperator): SearchQuery ={
     queries match {
       case Seq(x) => x
@@ -20,17 +33,10 @@ trait SearchQueryBuilder {
     }
   }
 
-  /*def createCompositeQueryFromStrings(queries: Seq[String], operator: QueryOperator): SearchQuery ={
-    queries match {
-      case x :: Nil => PrimitiveQuery(x)
-      case x :: rest => new CompositeQuery(PrimitiveQuery(x), operator, createCompositeQuery(rest,operator))
-    }
-  }*/
-
   private def build(xpathQuery: String, operators: Seq[QueryOperator]): SearchQuery = {
     val tokens = xpathQuery.split(operators.head.toString).filter(!_.trim.isEmpty)
     if(operators.tail.isEmpty) {
-      createCompositeQuery(tokens.map(new PrimitiveQuery(_)),operators.head)
+      createCompositeQuery(tokens.map(createQueryForXpath),operators.head)
     } else {
       createCompositeQuery(tokens.map(build(_, operators.tail)), operators.head)
     }
@@ -40,7 +46,7 @@ trait SearchQueryBuilder {
     if (xpathQuery == null || xpathQuery.trim.length < 1 || !xpathQuery.trim.startsWith("/"))
       UndefinedPrimitiveQuery
     else
-      build(xpathQuery.trim.replaceAll(" ",""), Seq(QueryOperator.And, QueryOperator.Or))
+      build(xpathQuery.trim.replaceAll(" ",""), Seq(QueryOperator.Or, QueryOperator.And))
   }
 }
 

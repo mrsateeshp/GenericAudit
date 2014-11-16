@@ -1,7 +1,6 @@
 package com.thoughtstream.audit.process
 
 import com.thoughtstream.audit.Utils
-
 /**
  *
  * @author Sateesh
@@ -9,24 +8,25 @@ import com.thoughtstream.audit.Utils
  */
 trait JsonQueryBuilder {
 
-  def isPrimitiveQueryNumeric(query: PrimitiveQuery) = {
-    val xpath = query.xpath
-    xpath.count(_.equals('=')) match {
-      case 0 => false
-      case 1 => Utils.isNumeric(xpath.split("=")(1))
-      case _ => throw new RuntimeException("malformed xpath: " + xpath)
+  def getJsonPrimitiveValue(query: PrimitiveQuery): String = {
+    val value = query.xpath.trim.split("=")(1)
+    if(Utils.isNumeric(value)) {
+      value
+    } else {
+
+      "{ $regex: '"+value.replace("%",".*")+"', $options: 'i'}"
     }
   }
 
   def jsonQueryConverter(query: PrimitiveQuery): String = {
-    val xpath = query.xpath
-    if (!xpath.contains('=')) {
+    val xpath = query.xpath.trim
+    if (!xpath.contains('=') || xpath.charAt(xpath.length-1).equals('=')) {
       "{'" + query.xpath.trim.replaceFirst("/", "").replaceAll("/", ".") + "':{$exists: true}}"
     } else {
-      val isNumeric = isPrimitiveQueryNumeric(query)
-      val (open, close) = if (isNumeric) ("':", "}") else ("':'", "'}")
+      val jsonXpathWithOutValue = xpath.split("=")(0).trim.replaceFirst("/", "").replaceAll("/", ".")
+      val value = getJsonPrimitiveValue(query)
 
-      "{$or: [{'" + query.xpath.trim.replaceFirst("/", "").replaceAll("/", ".").replace("=", open) + close + ", " + "{'" + query.xpath.trim.replaceFirst("/", "").replaceAll("/", ".").replace("=", postfixForOldPrimitiveValue + open) + close + "]}"
+      "{$or: [{'" + jsonXpathWithOutValue +"':" + value + "}" + ", " + "{'" + jsonXpathWithOutValue + postfixForOldPrimitiveValue +"':" + value + "}" + "]}"
     }
   }
 
@@ -35,7 +35,7 @@ trait JsonQueryBuilder {
     val queryFormat = "{ %s: [%s,%s] }"
     val operatorString = query.operator match {
       case And => "$and"
-      case or => "$or"
+      case Or => "$or"
     }
 
     queryFormat.format(operatorString, query.leftQuery.process(jsonQueryConverter), query.rightQuery.process(jsonQueryConverter))

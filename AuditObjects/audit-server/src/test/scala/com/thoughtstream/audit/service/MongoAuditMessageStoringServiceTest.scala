@@ -47,7 +47,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     consumer.save(processor.process(newObj, oldObj))
     val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
 
-    var result = searchService.search("/user/uidWife=123&&/user/eId=johnf")
+    var result = searchService.search("/user/uidWife=123&&/user/eId=JOHNF")
     assert(result.size === 1)
     println(pretty(render(result.head)))
 
@@ -62,6 +62,35 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     assert(result.size === 1)
     println(pretty(render(result.head)))
 
+    result = searchService.search("/user=johnf")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user=johnf/uidWife=123++/user/eId=johnf12")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user=johnf1")
+    assert(result.size === 0)
+
+    result = searchService.search("/user=johnf1/uidWife=123")
+    assert(result.size === 0)
+
+    // like
+    result = searchService.search("/user/eId=joh%")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user/eId=%hnf++/user/test=abc")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user/eId=%h%++/user/test=abc")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+
+    result = searchService.search("/user/eId=%qw%++/user/test=abc")
+    assert(result.size === 0)
     //tear down
     collection.remove(MongoDBObject())
   }
