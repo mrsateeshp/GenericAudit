@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.thoughtstream</groupId>
+		<groupId>com.thoughtstream.audit</groupId>
 		<artifactId>AuditObjectsAggregator</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
@@ -25,6 +25,11 @@
     </properties>
 	
     <dependencies>
+        <dependency>
+            <groupId>com.thoughtstream.audit</groupId>
+            <artifactId>audit-java-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>casbah_${scala.major.version}</artifactId>

@@ -3,10 +3,14 @@ package com.thoughtstream.audit.service
 import com.github.simplyscala.{MongodProps, MongoEmbedDatabase}
 import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
+import com.thoughtstream.audit.User
 import com.thoughtstream.audit.bean.MongoDB
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor
+import com.thoughtstream.audit.utils.ReflectionUtils
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.json4s.native.JsonMethods._
+
+import scala.xml.XML
 
 /**
  * Integration test
@@ -24,6 +28,26 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
   val serviceEndpoint = ("localhost",27017)
   val databaseName = "AuditObjects"
+
+  test("testing with real objects") {
+    val processor = JsonAuditMessageProcessor
+    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+
+    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+
+    val user = new User(1,"user1")
+    val oldObj = XML.loadString(ReflectionUtils.getEntityXml(user))
+    user.setName("user2")
+    user.setAddress(new User.Address("22 Dec St", "HA3 6MA"))
+    val newObj = XML.loadString(ReflectionUtils.getEntityXml(user))
+
+    consumer.save(processor.process(newObj, oldObj))
+    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
+
+    var result = searchService.search("/User")
+    assert(result.size === 1)
+    println(pretty(render(result.head)))
+  }
 
   test("first record save to & retrieve from MongoDb") {
     val processor = JsonAuditMessageProcessor

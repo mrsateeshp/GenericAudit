@@ -1,24 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>AuditObjectsAggregator</artifactId>
+        <groupId>com.thoughtstream.audit</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.thoughtstream.audit</groupId>
-    <artifactId>AuditObjectsAggregator</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <artifactId>audit-java-client</artifactId>
+    <packaging>jar</packaging>
 
-    <name>AuditObjectsAggregator</name>
+    <name>audit-java-client</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
-        <encoding>UTF-8</encoding>
     </properties>
-	
-	<modules>
-        <module>audit-java-client</module>
-        <module>audit-server/</module>
-    </modules>
+
 </project>
