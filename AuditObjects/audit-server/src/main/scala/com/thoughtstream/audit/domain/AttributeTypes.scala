@@ -5,7 +5,7 @@ package com.thoughtstream.audit.domain
  * @author Sateesh
  * @since 10/11/2014
  */
-abstract class VariableType
+abstract class AttributeType
 
 trait XMLElementAware {
   def getXmlElementTag: String
@@ -13,12 +13,12 @@ trait XMLElementAware {
   def unapply(label: String): Option[Boolean] = Some(getXmlElementTag.equalsIgnoreCase(label))
 }
 
-case class Primitive(value: String, isNumeric: Boolean = false) extends VariableType
+case class Primitive(value: String, isNumeric: Boolean = false) extends AttributeType
 
 object Primitive extends XMLElementAware {
   val getXmlElementTag = "primitive"
 
-  def unapply(that: VariableType): Option[(String, Boolean)] = {
+  def unapply(that: AttributeType): Option[(String, Boolean)] = {
     that match {
       case null => None
       case x: Primitive => Some((x.value, x.isNumeric))
@@ -28,10 +28,10 @@ object Primitive extends XMLElementAware {
 }
 
 trait ComplexType {
-  this: VariableType =>
+  this: AttributeType =>
 }
 
-class Entity extends VariableType with ComplexType
+class Entity extends AttributeType with ComplexType
 
 object Entity extends XMLElementAware {
   val getXmlElementTag = "entity"
@@ -39,7 +39,7 @@ object Entity extends XMLElementAware {
   def apply() = new Entity
 }
 
-class ValueObject extends VariableType with ComplexType
+class ValueObject extends AttributeType with ComplexType
 
 object ValueObject extends XMLElementAware {
   val getXmlElementTag = "valueObject"
@@ -47,7 +47,7 @@ object ValueObject extends XMLElementAware {
   def apply() = new ValueObject
 }
 
-class Collection extends VariableType with ComplexType
+class Collection extends AttributeType with ComplexType
 
 object Collection extends XMLElementAware {
   val getXmlElementTag = "collection"

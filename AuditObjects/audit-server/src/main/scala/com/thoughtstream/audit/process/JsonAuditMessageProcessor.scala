@@ -12,7 +12,7 @@ import scala.xml.Elem
 object JsonAuditMessageProcessor extends AuditMessageProcessor {
 
   override def process(newObject: Elem, oldObject: Elem = <root/>): String = {
-    val result = doConvertToJsonWithString(performDiffAndMerge(oldObject,newObject))
+    val result = doConvertToJsonString(performDiffAndMerge(oldObject,newObject))
     println(result)
     "{" + result + "}"
   }
@@ -38,7 +38,7 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
     }
   }
   
-  def performDiffAndMerge(oldObject: Elem, newObject: Elem): Seq[(String, VariableType)] = {
+  def performDiffAndMerge(oldObject: Elem, newObject: Elem): Seq[(String, AttributeType)] = {
     val oldObjectDataMap = extractVariablesWithXpaths(oldObject)
     val newObjectDataMap = extractVariablesWithXpaths(newObject)
 
@@ -82,7 +82,7 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
     if (primitive.isNumeric) primitive.value else "\"" + primitive.value + "\""
   }
 
-  def applyDoNotUseTag(parentKey: String, input: (String, VariableType)): (String, VariableType) = {
+  def applyDoNotUseTag(parentKey: String, input: (String, AttributeType)): (String, AttributeType) = {
     val key = input._1
     if (key.startsWith(parentKey)) {
       (parentKey + "/DO_NOT_USE" + key.substring(parentKey.length + 1), input._2)
@@ -92,39 +92,39 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
 
   }
 
-  def processNestedCollections(key: String, source: Seq[(String, VariableType)]): String = {
+  def processNestedCollections(key: String, source: Seq[(String, AttributeType)]): String = {
     val childElements = source.tail.filter(_._1.startsWith(key + "/")).map(x => applyDoNotUseTag(key, x))
-    val resultTemp = generateKeyPart(key) + " [" + doConvertToJsonWithString(childElements) + "]"
+    val resultTemp = generateKeyPart(key) + " [" + doConvertToJsonString(childElements) + "]"
     val remaining = source.tail.filter(!_._1.startsWith(key + "/"))
     if (remaining.isEmpty)
       resultTemp
     else
-      resultTemp + " , " + doConvertToJsonWithString(remaining)
+      resultTemp + " , " + doConvertToJsonString(remaining)
   }
 
-  def processNestedObjects(key: String, source: Seq[(String, VariableType)]): String = {
-    val resultTemp = generateKeyPart(key) + " {" + doConvertToJsonWithString(source.tail.filter(_._1.startsWith(key + "/"))) + "}"
+  def processNestedObjects(key: String, source: Seq[(String, AttributeType)]): String = {
+    val resultTemp = generateKeyPart(key) + " {" + doConvertToJsonString(source.tail.filter(_._1.startsWith(key + "/"))) + "}"
     val remaining = source.tail.filter(!_._1.startsWith(key + "/"))
     if (remaining.isEmpty)
       resultTemp
     else
-      resultTemp + " , " + doConvertToJsonWithString(remaining)
+      resultTemp + " , " + doConvertToJsonString(remaining)
   }
 
-  def doConvertToJsonWithString(source: Seq[(String, VariableType)]): String = {
+  def doConvertToJsonString(source: Seq[(String, AttributeType)]): String = {
 
     val (key, value) = source.head
     println(key)
     val result: String = value match {
       case x: Primitive if source.tail.isEmpty => generateKeyPart(key) + generatePrimitiveValue(x)
-      case x: Primitive => generateKeyPart(key) + generatePrimitiveValue(x) + " , " + doConvertToJsonWithString(source.tail)
+      case x: Primitive => generateKeyPart(key) + generatePrimitiveValue(x) + " , " + doConvertToJsonString(source.tail)
       case _: Entity | _: ValueObject => processNestedObjects(key, source)
       case x: Collection => processNestedCollections(key, source)
     }
     result
   }
 
-  def extractVariablesWithXpaths(elements: Seq[Elem], withInitialXpath: String, result: Map[String, VariableType]): Map[String, VariableType] = {
+  def extractVariablesWithXpaths(elements: Seq[Elem], withInitialXpath: String, result: Map[String, AttributeType]): Map[String, AttributeType] = {
     val element = elements.head
     val nextElements = elements.tail
 
@@ -164,7 +164,7 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
     }
   }
 
-  def extractVariablesWithXpaths(element: Elem, withInitialXpath: String = "/", result: Map[String, VariableType] = Map()): Map[String, VariableType] = {
+  def extractVariablesWithXpaths(element: Elem, withInitialXpath: String = "/", result: Map[String, AttributeType] = Map()): Map[String, AttributeType] = {
     extractVariablesWithXpaths(Seq(element), withInitialXpath, result)
   }
 }
