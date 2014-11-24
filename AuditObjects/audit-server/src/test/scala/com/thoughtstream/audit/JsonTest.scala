@@ -1,27 +1,37 @@
 package com.thoughtstream.audit
 
-import com.thoughtstream.audit.domain._
-import com.thoughtstream.audit.process._
-import org.json4s.Xml.{toJson, toXml}
-import org.json4s.JValue
 import org.scalatest.FunSuite
-
-import org.json4s.JsonDSL._
-import org.json4s.native.JsonMethods._
-
-import scala.util.matching.Regex
+import play.api.libs.json.{JsValue, JsObject}
 
 /**
  *
  * @author Sateesh
  * @since 11/11/2014
  */
+import play.api.libs.json._
 @deprecated
 class JsonTest extends FunSuite{
 
   test("sample") {
+    val jsonString = "{\n  \"_id\":{\n    \"$oid\":\"546d2fff2ad4e9330e44405a\"\n  },\n  \"user\":{\n    \"eId\":\"johnf\",\n    \"eType\":\"user\",\n    \"uid\":456,\n    \"uid__old\":123,\n    \"uidWife\":123\n  },\n  \"auditInfo\":{\n    \"who\":\"unknown\",\n    \"when\":{\n      \"$date\":\"2014-11-20T00:04:15.084Z\"\n    }\n  }\n}"
 
+    val json = Json.parse(jsonString).asInstanceOf[JsObject]
+
+//    println(json)
+    println(convertToString(json))
   }
+
+  def convertToString(json: JsValue): String = {
+    json match {
+      case x: JsString => "'"+x.value+"'"
+      case x: JsNumber => x.value.toString()
+      case x: JsBoolean => x.value.toString
+      case x: JsArray => "{"+x.value.map(convertToString).mkString(",")+"}"
+      case x: JsObject => "{" + x.fields.map(f=> f._1 + " => " + convertToString(f._2)).mkString(",") + "}"
+    }
+  }
+
+
   /*def convertToJson(source: Map[String, VariableType]): JValue = {
 
     val (key,value) = source.head

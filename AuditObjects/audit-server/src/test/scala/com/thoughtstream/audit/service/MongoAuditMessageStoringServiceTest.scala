@@ -8,7 +8,7 @@ import com.thoughtstream.audit.bean.MongoDB
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor
 import com.thoughtstream.audit.utils.ReflectionUtils
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.json4s.native.JsonMethods._
+import play.api.libs.json.Json
 
 import scala.xml.XML
 
@@ -44,9 +44,10 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     consumer.save(processor.process(newObj, oldObj))
     val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
 
-    var result = searchService.search("/User")
+    val result = searchService.search("/User")
+
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
   }
 
   test("first record save to & retrieve from MongoDb") {
@@ -73,26 +74,26 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
     var result = searchService.search("/user/uidWife=123&&/user/eId=JOHNF")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user/uidWife=123&&/user/eId=johnf12")
     assert(result.size === 0)
 
     result = searchService.search("/user/uidWife=123++/user/eId=johnf")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user/uidWife=123++/user/eId=johnf12")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user=johnf")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user=johnf/uidWife=123++/user/eId=johnf12")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user=johnf1")
     assert(result.size === 0)
@@ -103,15 +104,15 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     // like
     result = searchService.search("/user/eId=joh%")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user/eId=%hnf++/user/test=abc")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user/eId=%h%++/user/test=abc")
     assert(result.size === 1)
-    println(pretty(render(result.head)))
+    println(Json.prettyPrint(result.head))
 
     result = searchService.search("/user/eId=%qw%++/user/test=abc")
     assert(result.size === 0)
@@ -143,8 +144,9 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 //    val userOptional = collection.findOne(JSON.parse("{ $and: [{'user.uid': 456}, {'user.uid__old': 123}]}").asInstanceOf[DBObject])
     val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
 
-    val result = parse(userOptional.get.toString)
-    assert((result \ "user" \ "eId").values === "johnf")
+    val result = Json.parse(userOptional.get.toString)
+
+    assert((result \ "user" \ "eId").as[String] === "johnf")
 
     //tear down
     collection.remove(MongoDBObject())
