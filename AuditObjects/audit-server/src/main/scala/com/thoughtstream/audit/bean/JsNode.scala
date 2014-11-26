@@ -5,8 +5,9 @@ package com.thoughtstream.audit.bean
  * @author Sateesh
  * @since 23/11/2014
  */
-case class JsNode(title: String, children: Seq[JsNode] = null) {
-  val isIsFolder: Boolean = children != null && children.size > 0
+case class JsNode(title: String, children: Seq[JsNode] = Seq[JsNode]()) {
+  //todo: use require to prevent null for children
+  val isIsFolder: Boolean = children != null && children.nonEmpty
 
   def ++(node: JsNode): Seq[JsNode] = Seq(this, node)
 

@@ -5,7 +5,7 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.User
 import com.thoughtstream.audit.bean.MongoDB
-import com.thoughtstream.audit.process.JsonAuditMessageProcessor
+import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
 import com.thoughtstream.audit.utils.ReflectionUtils
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import play.api.libs.json.Json
@@ -140,11 +140,115 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     </entity>
 
     consumer.save(processor.process(newObj, oldObj))
-//    val userOptional = collection.findOne(JSON.parse("{'user.eId': 'johnf'}").asInstanceOf[DBObject])
-//    val userOptional = collection.findOne(JSON.parse("{ $and: [{'user.uid': 456}, {'user.uid__old': 123}]}").asInstanceOf[DBObject])
+
     val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
 
     val result = Json.parse(userOptional.get.toString)
+
+    assert((result \ "user" \ "eId").as[String] === "johnf")
+
+    //tear down
+    collection.remove(MongoDBObject())
+  }
+
+  test("first record save to MongoDb and convert to presentable JsNodes") {
+    val processor = JsonAuditMessageProcessor
+    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+
+    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+
+    val oldObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="123" numeric="true"/>
+      <entity name="wife">
+        <primitive name="eId" value="marryk"/>
+        <primitive name="eType" value="user"/>
+      </entity>
+      <valueObject name="address">
+        <primitive name="appNo" value="23" numeric="TRUE"/>
+        <primitive name="fLine" value="April Street"/>
+        <primitive name="postcode" value="MA2 4HL"/>
+        <entity name="town">
+          <primitive name="eId" value="New York"/>
+          <primitive name="eType" value="place"/>
+        </entity>
+      </valueObject>
+      <collection name="yearsOfEmployment">
+        <primitive name="1" value="2005" numeric="TRUE"/>
+        <primitive name="2" value="2001" numeric="TRUE"/>
+      </collection>
+      <collection name="friends">
+        <entity name="1">
+          <primitive name="eId" value="rajeshsv"/>
+          <primitive name="eType" value="user"/>
+        </entity>
+        <entity name="2">
+          <primitive name="eId" value="maheshm"/>
+          <primitive name="eType" value="user"/>
+        </entity>
+      </collection>
+      <collection name="previousAddresses">
+        <valueObject name="1">
+          <primitive name="firstLine" value="23 May St"/>
+          <primitive name="postcode" value="MH4 5FD"/>
+        </valueObject>
+        <valueObject name="2">
+          <primitive name="firstLine" value="23 June St"/>
+          <primitive name="postcode" value="MH4 8FD"/>
+        </valueObject>
+      </collection>
+    </entity>
+    val newObj = <entity name="user">
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="123" numeric="true"/>
+      <entity name="wife">
+        <primitive name="eId" value="juliy"/>
+        <primitive name="eType" value="user"/>
+      </entity>
+      <valueObject name="address">
+        <primitive name="appNo" value="23" numeric="TRUE"/>
+        <primitive name="fLine" value="April Street"/>
+        <primitive name="postcode" value="MA2 4HL"/>
+        <entity name="town">
+          <primitive name="eId" value="New York"/>
+          <primitive name="eType" value="place"/>
+        </entity>
+      </valueObject>
+      <collection name="yearsOfEmployment">
+        <primitive name="1" value="2005" numeric="TRUE"/>
+        <primitive name="2" value="2001" numeric="TRUE"/>
+      </collection>
+      <collection name="friends">
+        <entity name="1">
+          <primitive name="eId" value="rajeshsv"/>
+          <primitive name="eType" value="user"/>
+        </entity>
+        <entity name="2">
+          <primitive name="eId" value="maheshm"/>
+          <primitive name="eType" value="user"/>
+        </entity>
+      </collection>
+      <collection name="previousAddresses">
+        <valueObject name="1">
+          <primitive name="firstLine" value="23 May St"/>
+          <primitive name="postcode" value="MH4 5FD"/>
+        </valueObject>
+        <valueObject name="2">
+          <primitive name="firstLine" value="23 June St"/>
+          <primitive name="postcode" value="MH4 8FD"/>
+        </valueObject>
+      </collection>
+    </entity>
+
+    consumer.save(processor.process(newObj, oldObj))
+
+    val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
+
+    val result = Json.parse(userOptional.get.toString)
+
+    println(FancyTreeProcessor.transformToPresentableJsNodes(result).mkString("[",",","]"))
 
     assert((result \ "user" \ "eId").as[String] === "johnf")
 
