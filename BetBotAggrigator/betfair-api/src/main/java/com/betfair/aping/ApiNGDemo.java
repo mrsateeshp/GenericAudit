@@ -105,27 +105,7 @@ public class ApiNGDemo {
             }
         }
 
-        if(jsonRpcRequest) {
-            final ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
-            Thread betThread = new Thread(){
-                @Override
-                public void run() {
-                    while(true) {
-                        try {
-                            jsonRpcDemo.start();
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            };
 
-            betThread.start();
-        } else {
-            ApiNGJRescriptDemo rescriptDemo = new ApiNGJRescriptDemo();
-            rescriptDemo.start(applicationKey, sessionToken);
-        }
     }
 
     public static Properties getProp() {

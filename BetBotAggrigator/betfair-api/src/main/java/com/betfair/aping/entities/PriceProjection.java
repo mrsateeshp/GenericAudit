@@ -2,10 +2,11 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.enums.PriceData;
 
+import java.io.Serializable;
 import java.util.Set;
 
 
-public class PriceProjection {
+public class PriceProjection  implements Serializable {
 	private Set<PriceData> priceData;
 	private ExBestOfferOverRides exBestOfferOverRides;
 	private boolean virtualise;

@@ -1,6 +1,8 @@
 package com.betfair.aping.entities;
 
-public class LimitOnCloseOrder {
+import java.io.Serializable;
+
+public class LimitOnCloseOrder  implements Serializable {
 	private double liability;
 	private double price;
 

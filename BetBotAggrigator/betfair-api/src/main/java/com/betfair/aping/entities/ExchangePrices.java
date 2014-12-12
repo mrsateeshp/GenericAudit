@@ -1,8 +1,9 @@
 package com.betfair.aping.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ExchangePrices {
+public class ExchangePrices  implements Serializable {
 
 	private List<PriceSize> availableToBack;
 	private List<PriceSize> availableToLay;

@@ -2,7 +2,9 @@ package com.betfair.aping.containers;
 
 import com.betfair.aping.entities.Error;
 
-public class Container {
+import java.io.Serializable;
+
+public class Container  implements Serializable {
 	
 	private Error error;
 	private String jsonrpc;

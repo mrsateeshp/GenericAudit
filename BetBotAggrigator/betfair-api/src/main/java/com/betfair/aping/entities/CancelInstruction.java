@@ -3,7 +3,9 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.OrderType;
 import com.betfair.aping.enums.Side;
 
-public class CancelInstruction {
+import java.io.Serializable;
+
+public class CancelInstruction  implements Serializable {
 
 	private String betId;
 	private Double sizeReduction;

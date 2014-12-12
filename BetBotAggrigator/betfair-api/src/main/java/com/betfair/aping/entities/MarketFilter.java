@@ -3,10 +3,11 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.MarketBettingType;
 import com.betfair.aping.enums.OrderStatus;
 
+import java.io.Serializable;
 import java.util.Set;
 
 
-public class MarketFilter {
+public class MarketFilter  implements Serializable {
 
 	private String textQuery;
 	private Set<String> exchangeIds;

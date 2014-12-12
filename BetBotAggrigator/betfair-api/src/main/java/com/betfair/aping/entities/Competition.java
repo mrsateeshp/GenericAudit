@@ -1,6 +1,8 @@
 package com.betfair.aping.entities;
 
-public class Competition {
+import java.io.Serializable;
+
+public class Competition  implements Serializable {
 
 	private String id;
 	private String name;

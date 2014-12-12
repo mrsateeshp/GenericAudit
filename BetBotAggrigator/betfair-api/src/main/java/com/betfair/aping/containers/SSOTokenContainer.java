@@ -1,10 +1,12 @@
 package com.betfair.aping.containers;
 
+import java.io.Serializable;
+
 /**
  * @author Sateesh
  * @since 02/12/2014
  */
-public class SSOTokenContainer {
+public class SSOTokenContainer  implements Serializable {
 
     public String token;
     public String status;

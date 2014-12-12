@@ -2,7 +2,9 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.enums.RollupModel;
 
-public class ExBestOfferOverRides {
+import java.io.Serializable;
+
+public class ExBestOfferOverRides  implements Serializable {
 
 	private int bestPricesDepth;
 	private RollupModel rollupModel;

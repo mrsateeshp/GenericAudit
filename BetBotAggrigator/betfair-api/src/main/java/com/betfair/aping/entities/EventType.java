@@ -1,6 +1,8 @@
 package com.betfair.aping.entities;
 
-public class EventType {
+import java.io.Serializable;
+
+public class EventType  implements Serializable {
 	private String id;
 	private String name;
 

@@ -1,7 +1,7 @@
 package com.betfair.aping;
 
-import com.betfair.aping.api.ApiNgJsonRpcOperations;
-import com.betfair.aping.api.ApiNgOperations;
+import com.betfair.aping.api.BetfairJsonRpcOperations;
+import com.betfair.aping.api.BetfairOperations;
 import com.betfair.aping.containers.SSOTokenContainer;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
@@ -38,7 +38,7 @@ import java.io.InputStreamReader;
  *
  */
 public class ApiNGJsonRpcDemo {
-    static class MarketAtInPlay {
+   /* static class MarketAtInPlay {
         MarketCatalogue marketCatalogue;
         MarketBook marketBook;
         Date startTime;
@@ -63,10 +63,13 @@ public class ApiNGJsonRpcDemo {
     }
 
     static final Logger logger = LoggerFactory.getLogger(ApiNGJsonRpcDemo.class);
-    private static ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
+
 
     public volatile static String applicationKey="-------------";
     public volatile static String sessionToken = getSSOToken();
+
+    private static BetfairOperations jsonOperations = new BetfairJsonRpcOperations(applicationKey, sessionToken);
+
     public volatile static double veryHotPlayerOdds = 1.4;
     public volatile static double okPlayerOdds = 1.7;
     public volatile static double amount = 2;
@@ -327,10 +330,10 @@ public class ApiNGJsonRpcDemo {
 
         try {
 
-            /**
+            *//**
              * ListEventTypes: Search for the event types and then for the "Horse Racing" in the returned list to finally get
              * the listEventTypeId
-             */
+             *//*
             MarketFilter marketFilter;
 
             TimeRange time = new TimeRange();
@@ -364,11 +367,11 @@ public class ApiNGJsonRpcDemo {
 
 //                logger.info("5. Print static marketId, name and runners....\n");
                 printMarketCatalogue(marketCatalogue);
-                /**
+                *//**
                  * ListMarketBook: get list of runners in the market, parameters:
                  * marketId:  the market we want to list runners
                  *
-                 */
+                 *//*
 //                logger.info("6.(listMarketBook) Get volatile info for Market including best 3 exchange prices available...\n");
                 String marketIdChosen = marketCatalogue.getMarketId();
 
@@ -389,7 +392,7 @@ public class ApiNGJsonRpcDemo {
                         orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
 
 
-                /**
+                *//**
                  * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
                  * marketId: the market id
                  * selectionId: the runner selection id we want to place the bet on
@@ -399,7 +402,7 @@ public class ApiNGJsonRpcDemo {
                  * price: the price of the bet
                  * customerRef: 1 - unique reference for a transaction specified by user, must be different for each request
                  *
-                 */
+                 *//*
 
                 long selectionId = 0;
                 if (marketBookReturn.size() != 0) {
@@ -733,4 +736,4 @@ public class ApiNGJsonRpcDemo {
             throw new RuntimeException(e);
         }
     }
-}
+*/}

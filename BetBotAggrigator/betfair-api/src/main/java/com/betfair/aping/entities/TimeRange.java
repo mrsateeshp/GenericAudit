@@ -1,8 +1,9 @@
 package com.betfair.aping.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TimeRange {
+public class TimeRange  implements Serializable {
 
 	private Date from;
 

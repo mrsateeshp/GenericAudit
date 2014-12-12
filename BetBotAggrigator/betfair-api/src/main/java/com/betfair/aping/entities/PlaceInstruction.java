@@ -3,7 +3,9 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.OrderType;
 import com.betfair.aping.enums.Side;
 
-public class PlaceInstruction {
+import java.io.Serializable;
+
+public class PlaceInstruction  implements Serializable {
 
 	private OrderType orderType;
 	private long selectionId;

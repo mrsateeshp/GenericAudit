@@ -2,7 +2,9 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.exceptions.APINGException;
 
-public class Data {
+import java.io.Serializable;
+
+public class Data  implements Serializable {
 
 	private APINGException APINGException;
 

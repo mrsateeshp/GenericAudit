@@ -3,7 +3,9 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.enums.PersistenceType;
 
-public class LimitOrder {
+import java.io.Serializable;
+
+public class LimitOrder  implements Serializable {
 
 	private double size;
 	private double price;

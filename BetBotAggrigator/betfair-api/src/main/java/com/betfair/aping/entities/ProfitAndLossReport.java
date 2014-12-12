@@ -3,10 +3,11 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.ExecutionReportErrorCode;
 import com.betfair.aping.enums.ExecutionReportStatus;
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class ProfitAndLossReport {
+public class ProfitAndLossReport  implements Serializable {
 
 	private String marketId;
 	private List<ProfitAndLoss> profitAndLosses;

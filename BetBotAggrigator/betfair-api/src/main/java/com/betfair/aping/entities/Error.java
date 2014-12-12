@@ -1,6 +1,8 @@
 package com.betfair.aping.entities;
 
-public class Error {
+import java.io.Serializable;
+
+public class Error  implements Serializable {
 
 	private Data data;
 

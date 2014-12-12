@@ -2,7 +2,9 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.entities.EventType;
 
-public class EventTypeResult {
+import java.io.Serializable;
+
+public class EventTypeResult  implements Serializable {
 	private EventType eventType ; 
 	private int marketCount;
 	

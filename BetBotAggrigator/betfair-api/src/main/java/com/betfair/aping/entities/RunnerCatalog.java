@@ -1,6 +1,8 @@
 package com.betfair.aping.entities;
 
-public class RunnerCatalog {
+import java.io.Serializable;
+
+public class RunnerCatalog  implements Serializable {
 
 	private Long selectionId;
 	private String runnerName;

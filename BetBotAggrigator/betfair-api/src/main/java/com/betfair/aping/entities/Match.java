@@ -1,8 +1,9 @@
 package com.betfair.aping.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Match {
+public class Match  implements Serializable {
 
 	private String betId;
 	private String matchId;

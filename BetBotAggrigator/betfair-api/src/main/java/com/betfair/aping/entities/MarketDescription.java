@@ -1,9 +1,10 @@
 package com.betfair.aping.entities;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class MarketDescription {
+public class MarketDescription  implements Serializable {
 
 	private Boolean persistenceEnabled;
 	private Boolean bspMarket;

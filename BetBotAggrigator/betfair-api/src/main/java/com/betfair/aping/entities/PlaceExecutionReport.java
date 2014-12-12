@@ -3,10 +3,11 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.ExecutionReportErrorCode;
 import com.betfair.aping.enums.ExecutionReportStatus;
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class PlaceExecutionReport {
+public class PlaceExecutionReport  implements Serializable {
 
 	private String customerRef;
 	private ExecutionReportStatus status;

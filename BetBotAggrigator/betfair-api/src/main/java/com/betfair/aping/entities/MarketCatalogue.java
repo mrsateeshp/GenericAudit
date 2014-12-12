@@ -1,8 +1,9 @@
 package com.betfair.aping.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MarketCatalogue {
+public class MarketCatalogue  implements Serializable {
 
 	private String marketId;
 	private String marketName;

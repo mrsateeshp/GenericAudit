@@ -1,8 +1,9 @@
 package com.betfair.aping.entities;
 
 
+import java.io.Serializable;
 
-public class ProfitAndLoss {
+public class ProfitAndLoss  implements Serializable {
 
 	private long selectionId;
 	private double ifWin;

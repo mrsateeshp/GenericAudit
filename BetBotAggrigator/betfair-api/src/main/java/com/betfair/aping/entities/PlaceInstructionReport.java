@@ -3,9 +3,10 @@ package com.betfair.aping.entities;
 import com.betfair.aping.enums.InstructionReportErrorCode;
 import com.betfair.aping.enums.InstructionReportStatus;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PlaceInstructionReport {
+public class PlaceInstructionReport  implements Serializable {
 	private InstructionReportStatus status;
 	private InstructionReportErrorCode errorCode;
 	private PlaceInstruction instructionl;
