@@ -61,6 +61,34 @@ public class LoginUtils {
     }
 
     public static void keepConnectionLive(String applicationKey, String ssoToken){
-        //dummy
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost("https://identitysso.betfair.com/api/keepAlive");
+
+            post.setHeader("X-Application", applicationKey);
+            post.setHeader("X-Authentication", ssoToken);
+            post.setHeader("Accept", "application/json");
+
+            HttpResponse response = client.execute(post);
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+            StringBuffer result = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            System.out.println(result.toString());
+            SSOTokenContainer container = JsonConverter.convertFromJson(result.toString(), SSOTokenContainer.class);
+
+            if(container.getError().trim().length() > 0 || !container.getStatus().equalsIgnoreCase("SUCCESS")){
+                throw new RuntimeException("failed to keep the token alive, error: "+container.getError());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 }

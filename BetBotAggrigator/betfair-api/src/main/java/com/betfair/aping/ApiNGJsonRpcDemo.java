@@ -519,7 +519,7 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    public Runner getFavRunnerAtMarketStart(List<Runner> runners){
+    public Runner getFavRunner(List<Runner> runners){
         Runner result = null;
         for(Runner runner: runners){
             if(result == null){

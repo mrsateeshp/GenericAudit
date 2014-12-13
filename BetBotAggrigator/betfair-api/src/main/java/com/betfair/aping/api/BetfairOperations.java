@@ -34,6 +34,8 @@ public interface BetfairOperations {
 	public  List<MarketBook> listMarketBook(List<String> marketIds, PriceProjection priceProjection, OrderProjection orderProjection,
 						MatchProjection matchProjection, String currencyCode) throws APINGException;
 
+    public  MarketBook getMarketBook(String marketId) throws APINGException;
+
     public  List<MarketCatalogue> listMarketCatalogue(MarketFilter filter, Set<MarketProjection> marketProjection,
         MarketSort sort, String maxResult) throws APINGException;
 

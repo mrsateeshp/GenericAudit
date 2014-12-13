@@ -39,7 +39,7 @@ object ActorsTest extends App{
   val tester = system.actorOf(Props[TesterMaster], name = "tester")
   tester ! "before shutdown"
   tester ! PoisonPill
-
+  system.actorSelection("/user/*") ! PoisonPill
   /*tester ! "after shutdown"
   tester ! "after shutdown1"
   tester ! "after shutdown1"

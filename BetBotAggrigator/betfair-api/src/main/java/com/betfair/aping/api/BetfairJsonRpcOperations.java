@@ -61,8 +61,16 @@ public class BetfairJsonRpcOperations implements BetfairOperations {
             throw container.getError().getData().getAPINGException();
 
         return container.getResult();
+    }
 
+    @Override
+    public MarketBook getMarketBook(String marketId) throws APINGException {
+        PriceProjection priceProjection = new PriceProjection();
+        Set<PriceData> priceData = new HashSet<PriceData>();
+        priceData.add(PriceData.EX_BEST_OFFERS);
+        priceProjection.setPriceData(priceData);
 
+        return listMarketBook(Arrays.asList(marketId), priceProjection, null,null,null).get(0);
     }
 
     public List<MarketCatalogue> listMarketCatalogue(MarketFilter filter, Set<MarketProjection> marketProjection,

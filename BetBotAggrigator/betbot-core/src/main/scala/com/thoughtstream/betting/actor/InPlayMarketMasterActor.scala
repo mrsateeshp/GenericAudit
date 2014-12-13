@@ -10,11 +10,11 @@ import com.betfair.aping.MarketAtInPlay
  */
 class InPlayMarketMasterActor extends InformativeActor {
 
-  val footballActor = context.actorOf(Props[FootballActor], "Football")
+  val footballActor = context.actorOf(Props[FootballActor], "American_Football")
 
   def dispatchToActor(marketAtInPlay: MarketAtInPlay): Unit = {
     val sportType: String = marketAtInPlay.getMarketCatalogue.getEventType.getName
-    val actorOptional = context.child(sportType)
+    val actorOptional = context.child(sportType.replaceAll(" ","_"))
     if (actorOptional.isDefined) {
       actorOptional.get ! marketAtInPlay
     } else {
