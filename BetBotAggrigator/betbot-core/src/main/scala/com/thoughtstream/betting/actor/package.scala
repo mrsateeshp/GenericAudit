@@ -5,7 +5,8 @@ import java.util
 
 import com.betfair.aping.api.BetfairOperations
 import com.betfair.aping.entities._
-import com.betfair.aping.enums.{ExecutionReportStatus, OrderType, PersistenceType, Side}
+import com.betfair.aping.enums._
+import com.betfair.aping.exceptions.APINGException
 import org.slf4j.LoggerFactory
 
 /**
@@ -40,6 +41,17 @@ package object actor {
   def getCustomerRef: String = {
     customerRef = customerRef + 1
     customerRef.toString
+  }
+
+  @throws(classOf[APINGException])
+  def getMarketBookIfNotClosed(marketId: String): Option[MarketBook] = {
+    val marketBook = betfairOps.getMarketBook(marketId)
+
+    if(marketBook.getStatus.equalsIgnoreCase("CLOSED")) {
+      None
+    } else {
+      Some(marketBook)
+    }
   }
 
   def placeBackBet(runner: Runner, marketCatalogue: MarketCatalogue, minOdds: Double, maxOdds: Double, betSize: Long, hardLine: Boolean = false): Boolean = {
