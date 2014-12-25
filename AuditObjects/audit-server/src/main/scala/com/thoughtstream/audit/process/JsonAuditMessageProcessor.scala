@@ -114,7 +114,6 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
   def doConvertToJsonString(source: Seq[(String, AttributeType)]): String = {
 
     val (key, value) = source.head
-    println(key)
     val result: String = value match {
       case x: Primitive if source.tail.isEmpty => generateKeyPart(key) + generatePrimitiveValue(x)
       case x: Primitive => generateKeyPart(key) + generatePrimitiveValue(x) + " , " + doConvertToJsonString(source.tail)
