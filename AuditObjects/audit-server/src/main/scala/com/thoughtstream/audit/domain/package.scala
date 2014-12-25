@@ -9,7 +9,7 @@ import scala.xml.Elem
  */
 package object domain {
 
-  def constructVariableType(element: Elem): AttributeType = {
+  def constructAttributeType(element: Elem): AttributeType = {
     element.label match {
       case Primitive(true) =>
         val value = element.attribute("value").getOrElse(Seq()).text
@@ -26,7 +26,7 @@ package object domain {
     }
   }
 
-  def constructComplexType(element: Elem): AttributeType = {
+  private def constructComplexType(element: Elem): AttributeType = {
     element.label match {
       case Entity(true) => Entity()
 

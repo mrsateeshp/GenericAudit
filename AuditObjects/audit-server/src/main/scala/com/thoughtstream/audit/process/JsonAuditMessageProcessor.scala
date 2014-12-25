@@ -141,13 +141,13 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor {
       //leaf element --> mostly primitive
       element.label match {
         case Primitive(true) if element.attribute("value").isDefined =>
-          result + (xpathIncludingThisElem -> constructVariableType(element))
+          result + (xpathIncludingThisElem -> constructAttributeType(element))
 
         //else ignore the item
         case _ => result
       }
     } else {
-      val resultPlusThisElementXpath = result + (xpathIncludingThisElem -> constructComplexType(element))
+      val resultPlusThisElementXpath = result + (xpathIncludingThisElem -> constructAttributeType(element))
       //exercising all child elements
       val childElements = element.child.collect {
         case x: Elem => x
