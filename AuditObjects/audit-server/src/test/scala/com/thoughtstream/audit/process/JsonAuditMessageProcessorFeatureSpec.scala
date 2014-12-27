@@ -1,6 +1,6 @@
 package com.thoughtstream.audit.process
 
-import org.scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatest.FeatureSpec
 import play.api.libs.json._
 
 /**
@@ -8,14 +8,14 @@ import play.api.libs.json._
  * @author Sateesh
  * @since 25/12/2014
  */
-class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec with GivenWhenThen{
+class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
 
   info("As a Generic Audit application owner")
   info("I want to be able to compare xml snapshots of two objects and produce the diff in json format")
   info("So that i can save the json to a json store for easy retrieval.")
   info("Collections can be ignored for now.")
 
-  import JsonAuditMessageProcessor._
+  import com.thoughtstream.audit.process.JsonAuditMessageProcessor._
   feature("JsonAuditMessageProcessor"){
 
     scenario("Input contains xml for only new object"){
