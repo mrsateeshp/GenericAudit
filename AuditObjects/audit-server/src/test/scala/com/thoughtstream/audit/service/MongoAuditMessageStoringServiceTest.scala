@@ -1,12 +1,13 @@
 package com.thoughtstream.audit.service
 
-import com.github.simplyscala.{MongodProps, MongoEmbedDatabase}
 import com.mongodb.casbah.Imports._
+import com.mongodb.casbah.MongoConnection
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.User
 import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
 import com.thoughtstream.audit.utils.ReflectionUtils
+import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import play.api.libs.json.Json
 
@@ -17,19 +18,24 @@ import scala.xml.XML
  * @author Sateesh
  * @since 13/11/2014
  */
-class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDatabase with BeforeAndAfter{
-  var mongoProps: MongodProps = null
-
+class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter with StrictLogging{
   val serviceEndpoint = ("localhost",27017)
   val databaseName = "AuditObjects"
 
   val mongoDbInstance = new MongoDBInstance(serviceEndpoint,databaseName)
 
   before {
-    mongoProps = mongoStart(27017)   // by default port = 12345 & version = Version.2.3.0
-  }                                  // add your own port & version parameters in mongoStart method if you need it
+    logger.debug("starting the server")
+    MongoEmbeddedServer.start()
+    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+    collection.drop()
+  }
 
-  after { mongoStop(mongoProps) }
+  after {
+    //clean up
+    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+    collection.drop()
+  }
 
   test("testing with real objects") {
     val processor = JsonAuditMessageProcessor
