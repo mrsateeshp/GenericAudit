@@ -4,7 +4,7 @@ import com.github.simplyscala.{MongodProps, MongoEmbedDatabase}
 import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.User
-import com.thoughtstream.audit.bean.MongoDB
+import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
 import com.thoughtstream.audit.utils.ReflectionUtils
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -20,20 +20,20 @@ import scala.xml.XML
 class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDatabase with BeforeAndAfter{
   var mongoProps: MongodProps = null
 
+  val serviceEndpoint = ("localhost",27017)
+  val databaseName = "AuditObjects"
+
+  val mongoDbInstance = new MongoDBInstance(serviceEndpoint,databaseName)
+
   before {
     mongoProps = mongoStart(27017)   // by default port = 12345 & version = Version.2.3.0
   }                                  // add your own port & version parameters in mongoStart method if you need it
 
   after { mongoStop(mongoProps) }
 
-  val serviceEndpoint = ("localhost",27017)
-  val databaseName = "AuditObjects"
-
   test("testing with real objects") {
     val processor = JsonAuditMessageProcessor
-    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
-
-    val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+    val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val user = new User(1,"user1")
     val oldObj = XML.loadString(ReflectionUtils.getEntityXml(user))
@@ -42,7 +42,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     val newObj = XML.loadString(ReflectionUtils.getEntityXml(user))
 
     consumer.save(processor.process(newObj, oldObj))
-    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
+    val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
 
     val result = searchService.search("/User")
 
@@ -52,7 +52,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
   test("first record save to & retrieve from MongoDb") {
     val processor = JsonAuditMessageProcessor
-    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+    val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
 
@@ -70,7 +70,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
     </entity>
 
     consumer.save(processor.process(newObj, oldObj))
-    val searchService = new MongoBasedAuditSearchService(serviceEndpoint, databaseName)
+    val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
 
     var result = searchService.search("/user/uidWife=123&&/user/eId=JOHNF")
     assert(result.size === 1)
@@ -122,7 +122,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
   test("first record save to MongoDb") {
     val processor = JsonAuditMessageProcessor
-    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+    val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
 
@@ -153,7 +153,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with MongoEmbedDataba
 
   test("first record save to MongoDb and convert to presentable JsNodes") {
     val processor = JsonAuditMessageProcessor
-    val consumer = new MongoDB(serviceEndpoint,databaseName) with MongoAuditMessageStoringService
+    val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
 

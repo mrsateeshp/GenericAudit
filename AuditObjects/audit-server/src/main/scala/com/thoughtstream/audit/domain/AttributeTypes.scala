@@ -27,11 +27,7 @@ object Primitive extends XMLElementAware {
   }
 }
 
-trait ComplexType {
-  this: AttributeType =>
-}
-
-class Entity extends AttributeType with ComplexType
+class Entity extends AttributeType
 
 object Entity extends XMLElementAware {
   val getXmlElementTag = "entity"
@@ -39,7 +35,7 @@ object Entity extends XMLElementAware {
   def apply() = new Entity
 }
 
-class ValueObject extends AttributeType with ComplexType
+class ValueObject extends AttributeType
 
 object ValueObject extends XMLElementAware {
   val getXmlElementTag = "valueObject"
@@ -47,7 +43,7 @@ object ValueObject extends XMLElementAware {
   def apply() = new ValueObject
 }
 
-class Collection extends AttributeType with ComplexType
+class Collection extends AttributeType
 
 object Collection extends XMLElementAware {
   val getXmlElementTag = "collection"

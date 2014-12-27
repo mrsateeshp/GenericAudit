@@ -4,6 +4,7 @@ import java.util.Date
 
 import com.mongodb.BasicDBObject
 import com.mongodb.util.JSON
+import com.thoughtstream.audit.bean.MongoDBInstance
 
 /**
  *
@@ -16,17 +17,14 @@ trait AuditMessageStoringService {
 }
 
 import com.mongodb.casbah.Imports._
-trait MongoAuditMessageStoringService extends AuditMessageStoringService {
-  val serviceEndpoint: (String, Int)
-  val databaseName: String
+case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection") extends AuditMessageStoringService {
+  private val serviceEndpoint: (String, Int) = mongoDbInstance.serviceEndpoint
+  private val databaseName: String = mongoDbInstance.databaseName
 
-  private val mongoConn = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)
-  private val mongoDB = mongoConn(databaseName)
-  private val collectionName: String = "defCollection"
+  private val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
 
   //todo: enhance it to derive entity type and use to relate to collection
   override def save(auditMessage: String): Unit = {
-    val collection = mongoDB(collectionName)
     val dbObject = JSON.parse(auditMessage).asInstanceOf[DBObject]
     val auditInfo: BasicDBObject = new BasicDBObject()
 

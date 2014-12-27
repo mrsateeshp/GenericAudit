@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.casbah.Imports._
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.Utils
+import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process._
 import play.api.libs.json.{Json, JsValue}
 
@@ -20,10 +21,12 @@ trait AuditSearchService extends SearchQueryBuilder {
 }
 
 class MongoBasedAuditSearchService
-(serviceEndpoint: (String, Int), databaseName: String, collectionName: String = "defCollection")
+(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection")
   extends AuditSearchService with JsonQueryBuilder {
 
-  val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
+  private val serviceEndpoint = mongoDbInstance.serviceEndpoint
+  private val databaseName = mongoDbInstance.databaseName
+  private val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
 
   override def search(query: SearchQuery, startIndex: Int, noOfResults: Int): Iterable[JsValue] = {
     val jsonQuery = build(query)
