@@ -6,6 +6,8 @@ import com.thoughtstream.audit.anotation.AuditableId;
 import com.thoughtstream.audit.anotation.AuditableValueObject;
 
 /**
+ * just an example entity
+ *
  * @author Sateesh
  * @since 16/11/2014
  */

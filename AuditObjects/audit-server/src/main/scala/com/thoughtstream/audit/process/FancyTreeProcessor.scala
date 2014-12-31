@@ -16,6 +16,7 @@ object FancyTreeProcessor {
       case x: JsNumber => Seq(JsNode(x.value.toString()))
       case x: JsBoolean => Seq(JsNode(x.value.toString))
       case JsNull => Seq(JsNode(""))
+      case x: JsUndefined => Seq(JsNode(""))
       case x: JsObject => collapseTheOldValues(x).map(y => collapseSingleChildToParentJsNode(y._1, transformToPresentableJsNodes(y._2))).toSeq
       case x: JsArray => x.value.map(transformToPresentableJsNodes).zip(1 to x.value.size).map(y => JsNode("item_" + y._2, y._1))
     }

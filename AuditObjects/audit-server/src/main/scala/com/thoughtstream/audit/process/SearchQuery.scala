@@ -5,15 +5,14 @@ package com.thoughtstream.audit.process
  * @author Sateesh
  * @since 15/11/2014
  */
-trait SearchQuery {
-  def process[B](processor: SearchQuery => B): B = processor(this)
+sealed trait SearchQuery {
 }
 
 import com.thoughtstream.audit.process.QueryOperator.QueryOperator
 
 trait SearchQueryBuilder {
 
-  def createQueryForXpath(xpath: String): SearchQuery = {
+  private def createQueryForXpath(xpath: String): SearchQuery = {
     require(xpath != null && xpath.trim.length > 1 && xpath.trim.startsWith("/"), "Xpath can not be null or empty or just '/' for the PrimitiveQuery!")
 
     val firstElement = xpath.substring(1).split("/")(0)
@@ -26,7 +25,7 @@ trait SearchQueryBuilder {
     }
   }
 
-  def createCompositeQuery(queries: Seq[SearchQuery], operator: QueryOperator): SearchQuery ={
+  private def createCompositeQuery(queries: Seq[SearchQuery], operator: QueryOperator): SearchQuery ={
     queries match {
       case Seq(x) => x
       case Seq(x, rest@_*) => new CompositeQuery(x, operator, createCompositeQuery(rest,operator))
@@ -44,17 +43,15 @@ trait SearchQueryBuilder {
 
   def build(xpathQuery: String): SearchQuery = {
     if (xpathQuery == null || xpathQuery.trim.length < 1 || !xpathQuery.trim.startsWith("/"))
-      UndefinedPrimitiveQuery
+      PrimitiveQuery("/undefined")
     else
       build(xpathQuery.trim.replaceAll(" ",""), Seq(QueryOperator.Or, QueryOperator.And))
   }
 }
 
-case class PrimitiveQuery(xpath: String) extends SearchQuery {
+final case class PrimitiveQuery(xpath: String) extends SearchQuery {
   require(xpath != null && xpath.trim.length > 1 && xpath.trim.startsWith("/"), "Xpath can not be null or empty or just '/' for the PrimitiveQuery!")
 }
-
-object UndefinedPrimitiveQuery extends PrimitiveQuery("/undefined")
 
 object QueryOperator extends Enumeration {
   type QueryOperator = Value
@@ -62,5 +59,4 @@ object QueryOperator extends Enumeration {
   val Or = Value("\\+\\+")
 }
 
-
-case class CompositeQuery(leftQuery: SearchQuery, operator: QueryOperator, rightQuery: SearchQuery) extends SearchQuery
+final case class CompositeQuery(leftQuery: SearchQuery, operator: QueryOperator, rightQuery: SearchQuery) extends SearchQuery

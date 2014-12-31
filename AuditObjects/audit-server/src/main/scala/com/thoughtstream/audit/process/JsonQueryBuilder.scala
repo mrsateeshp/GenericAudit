@@ -8,7 +8,7 @@ import com.thoughtstream.audit.Utils
  */
 trait JsonQueryBuilder {
 
-  def getJsonPrimitiveValue(query: PrimitiveQuery): String = {
+  private def getJsonPrimitiveValue(query: PrimitiveQuery): String = {
     val value = query.xpath.trim.split("=")(1)
     if(Utils.isNumeric(value)) {
       value
@@ -18,7 +18,7 @@ trait JsonQueryBuilder {
     }
   }
 
-  def jsonQueryConverter(query: PrimitiveQuery): String = {
+  private def jsonQueryConverter(query: PrimitiveQuery): String = {
     val xpath = query.xpath.trim
     if (!xpath.contains('=') || xpath.charAt(xpath.length-1).equals('=')) {
       "{'" + query.xpath.trim.replaceFirst("/", "").replaceAll("/", ".") + "':{$exists: true}}"
@@ -31,14 +31,14 @@ trait JsonQueryBuilder {
   }
 
   import com.thoughtstream.audit.process.QueryOperator._
-  def jsonQueryConverter(query: CompositeQuery): String = {
+  private def jsonQueryConverter(query: CompositeQuery): String = {
     val queryFormat = "{ %s: [%s,%s] }"
     val operatorString = query.operator match {
       case And => "$and"
       case Or => "$or"
     }
 
-    queryFormat.format(operatorString, query.leftQuery.process(jsonQueryConverter), query.rightQuery.process(jsonQueryConverter))
+    queryFormat.format(operatorString, jsonQueryConverter(query.leftQuery), jsonQueryConverter(query.rightQuery))
   }
 
   private def jsonQueryConverter(query: SearchQuery): String = {
@@ -48,5 +48,5 @@ trait JsonQueryBuilder {
     }
   }
 
-  def build(query: SearchQuery): String = query.process(jsonQueryConverter)
+  def build(query: SearchQuery): String = jsonQueryConverter(query)
 }
