@@ -53,7 +53,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     val result = searchService.search("/User")
 
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
   }
 
   test("first record save to & retrieve from MongoDb") {
@@ -80,26 +80,26 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
 
     var result = searchService.search("/user/uidWife=123&&/user/eId=JOHNF")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user/uidWife=123&&/user/eId=johnf12")
     assert(result.size === 0)
 
     result = searchService.search("/user/uidWife=123++/user/eId=johnf")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user/uidWife=123++/user/eId=johnf12")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user=johnf")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user=johnf/uidWife=123++/user/eId=johnf12")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user=johnf1")
     assert(result.size === 0)
@@ -110,15 +110,15 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     // like
     result = searchService.search("/user/eId=joh%")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user/eId=%hnf++/user/test=abc")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user/eId=%h%++/user/test=abc")
     assert(result.size === 1)
-    println(Json.prettyPrint(result.head))
+    println(Json.prettyPrint(result.head.document))
 
     result = searchService.search("/user/eId=%qw%++/user/test=abc")
     assert(result.size === 0)

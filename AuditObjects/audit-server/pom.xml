@@ -21,7 +21,6 @@
         <encoding>UTF-8</encoding>
         <scala.major.version>2.11</scala.major.version>
         <scala.version>${scala.major.version}.2</scala.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -46,17 +45,6 @@
             <artifactId>scalatest_${scala.major.version}</artifactId>
             <version>2.2.2</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.scala-lang.modules</groupId>

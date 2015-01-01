@@ -12,12 +12,12 @@ import com.thoughtstream.audit.bean.MongoDBInstance
  * @since 12/11/2014
  */
 
-trait AuditMessageStoringService {
-  def save(auditMessage: String): Unit
+trait AuditMessageStoringService[A] {
+  def save(auditMessage: A): Unit
 }
 
 import com.mongodb.casbah.Imports._
-case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection") extends AuditMessageStoringService {
+case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection") extends AuditMessageStoringService[String] {
   private val serviceEndpoint: (String, Int) = mongoDbInstance.serviceEndpoint
   private val databaseName: String = mongoDbInstance.databaseName
 

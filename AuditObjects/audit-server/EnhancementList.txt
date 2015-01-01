@@ -1,0 +1,16 @@
+1) current old values are at same level as current value, should be stored as nested.
+example:
+    Current: root
+                --fname
+                    --abc
+                --fname_old
+                    --xyz
+
+    After enhancement:
+             root
+                --fname
+                    --abc
+                    --oldValue
+                        --xyz
+
+2) MongoBasedAuditSearchService --> exception handling in general

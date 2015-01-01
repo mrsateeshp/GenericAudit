@@ -6,7 +6,7 @@ import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor._
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FeatureSpec, GivenWhenThen}
-import play.api.libs.json.Json
+import play.api.libs.json._
 
 /**
  *
@@ -63,7 +63,7 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
       Then("Search results contain the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("Simple query with wrong values")
       result = searchService.search("/user=johnf1")
@@ -79,12 +79,20 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
         <primitive name="eType" value="user"/>
         <primitive name="uid" value="123" numeric="true"/>
         <primitive name="uidWife" value="123" numeric="true"/>
+        <collection name="yearsOfEmployment">
+          <primitive name="1" value="2005" numeric="TRUE"/>
+          <primitive name="2" value="2001" numeric="TRUE"/>
+        </collection>
       </entity>
       val newObj = <entity name="user">
         <primitive name="eId" value="johnf"/>
         <primitive name="eType" value="user"/>
         <primitive name="uid" value="456" numeric="true"/>
         <primitive name="uidWife" value="123" numeric="true"/>
+        <collection name="yearsOfEmployment">
+          <primitive name="1" value="2010" numeric="TRUE"/>
+          <primitive name="2" value="2011" numeric="TRUE"/>
+        </collection>
       </entity>
 
       val savedJson: String = process(newObj, oldObj)
@@ -96,21 +104,21 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
       Then("Search results contain the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("Query with xpath and a value(/user/eId=johnf)")
       result = searchService.search("/user/eId=johnf")
 
       Then("Search results contain the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("Search with composite Query and predicate is AND(/user/uid=123&&/user/eId=JOHNF)")
       result = searchService.search("/user/uid=123&&/user/eId=JOHNF")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("composite Query with wrong values")
       result = searchService.search("/user/uidWife=123&&/user/eId=johnf12")
@@ -123,21 +131,21 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("Search with composite Query and predicate is OR")
       result = searchService.search("/user/uidWife=123++/user/eId=johnf12")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("composite Query with nested values (/user=johnf/uidWife=123)")
       result = searchService.search("/user=johnf/uidWife=123++/user/eId=johnf12")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("nested query with wrong values")
       result = searchService.search("/user=johnf1/uidWife=123")
@@ -151,28 +159,28 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("composite query with like(/user/eId=%hnf++/user/test=abc)")
       result = searchService.search("/user/eId=%hnf++/user/test=abc")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("composite query with like")
       result = searchService.search("/user/eId=%h%++/user/test=abc")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("nested Query with like (/user=johnf/eId=john%)")
       result = searchService.search("/user=johnf/eId=john%")
 
       Then("Result contains the saved json")
       assert(result.size === 1)
-      logger.info("search result: "+Json.prettyPrint(result.head))
+      logger.info("search result: "+Json.prettyPrint(result.head.document))
 
       When("composite query with like with wrong values")
       result = searchService.search("/user/eId=%qw%++/user/test=abc")

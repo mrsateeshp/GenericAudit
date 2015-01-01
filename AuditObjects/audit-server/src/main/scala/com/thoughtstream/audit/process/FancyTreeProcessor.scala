@@ -17,12 +17,12 @@ object FancyTreeProcessor {
       case x: JsBoolean => Seq(JsNode(x.value.toString))
       case JsNull => Seq(JsNode(""))
       case x: JsUndefined => Seq(JsNode(""))
-      case x: JsObject => collapseTheOldValues(x).map(y => collapseSingleChildToParentJsNode(y._1, transformToPresentableJsNodes(y._2))).toSeq
+      case x: JsObject => collapseOldValues(x).map(y => collapseSingleChildToParentJsNode(y._1, transformToPresentableJsNodes(y._2))).toSeq
       case x: JsArray => x.value.map(transformToPresentableJsNodes).zip(1 to x.value.size).map(y => JsNode("item_" + y._2, y._1))
     }
   }
 
-  def collapseTheOldValues(input: JsObject): Seq[(String, JsValue)] = {
+  private def collapseOldValues(input: JsObject): Seq[(String, JsValue)] = {
     val oldValueNodes = input.fieldSet.filter(x => x._1.endsWith(postfixForOldPrimitiveValue))
     if (oldValueNodes.isEmpty) {
       input.fields
@@ -41,7 +41,7 @@ object FancyTreeProcessor {
     }
   }
 
-  def collapseSingleChildToParentJsNode(title: String, children: Seq[JsNode]): JsNode = {
+  private def collapseSingleChildToParentJsNode(title: String, children: Seq[JsNode]): JsNode = {
     children match {
       case Seq(x) if x.children == null || x.children.isEmpty => JsNode(title + (if (x.title.contains("=")) "/" else "=") + x.title)
       case _ => JsNode(title, children)

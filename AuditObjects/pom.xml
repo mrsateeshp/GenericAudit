@@ -20,5 +20,6 @@
 	<modules>
         <module>audit-java-client</module>
         <module>audit-server/</module>
+        <module>audit-server-web/</module>
     </modules>
 </project>

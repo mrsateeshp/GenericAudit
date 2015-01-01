@@ -9,7 +9,7 @@ import scala.xml.Elem
  * @author Sateesh
  * @since 12/11/2014
  */
-object JsonAuditMessageProcessor extends AuditMessageProcessor {
+object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,String] {
 
   override def process(newObject: Elem, oldObject: Elem = <root/>): String = {
     val result = doConvertToJsonString(performDiffAndMerge(oldObject,newObject))
