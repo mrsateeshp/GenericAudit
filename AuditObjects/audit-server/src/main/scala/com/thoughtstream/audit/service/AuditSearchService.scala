@@ -21,15 +21,18 @@ trait AuditSearchService[A] extends SearchQueryBuilder {
 
   def search(query: SearchQuery, startIndex: Int, noOfResults: Int): Iterable[A]
 
+  def searchQuerySuggestions(query: String): Iterable[String]
+
 }
 
 class MongoBasedAuditSearchService
-(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection")
+(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection", xpathCollectionName: String = "xpaths")
   extends AuditSearchService[MongoDBSearchResult] with JsonQueryBuilder {
 
   private val serviceEndpoint = mongoDbInstance.serviceEndpoint
   private val databaseName = mongoDbInstance.databaseName
   private val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
+  private val xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(xpathCollectionName)
 
   override def search(query: SearchQuery, startIndex: Int, noOfResults: Int): Iterable[MongoDBSearchResult] = {
     val jsonQuery = build(query)
@@ -74,6 +77,23 @@ class MongoBasedAuditSearchService
 
         MongoDBSearchResult(id, auditInfo, JsObject(Seq(documentList.head._1 -> documentList.head._2)))
       case _ => MongoDBSearchResult(null, null, value)
+    }
+  }
+
+
+  override def searchQuerySuggestions(inputQuery: String): Iterable[String] = {
+    val queryPathOption = extractLastQueryPath(subStringLastQuery(inputQuery))
+    println(queryPathOption)
+
+    val query = queryPathOption.getOrElse("")
+    if (query.isEmpty || query.charAt(0) != '/') {
+      Seq()
+    } else {
+
+      val jsonQuery = buildSuggestionsQuery(query)
+      val dbQuery = JSON.parse(jsonQuery).asInstanceOf[DBObject]
+
+      xpathCollection.distinct("xpath",dbQuery).map(_.toString.substring(query.lastIndexOf("/")+1)).toIterable
     }
   }
 

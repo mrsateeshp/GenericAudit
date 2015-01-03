@@ -1,13 +1,13 @@
 package com.thoughtstream.audit.process
 
 /**
- *
+ * ignores xpaths with --old suffix
  * @author Sateesh
  * @since 02/01/2015
  */
 object XpathToJsonConverter {
   def apply(xpath: String): Set[String] = {
-    if (xpath == null || xpath.isEmpty) {
+    if (xpath == null || xpath.isEmpty || xpath.endsWith(postfixForOldPrimitiveValue)) {
       Set()
     } else {
 

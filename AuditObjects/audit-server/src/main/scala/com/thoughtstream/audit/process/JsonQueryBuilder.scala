@@ -29,8 +29,6 @@ trait JsonQueryBuilder {
       "{$or: [{'" + jsonXpathWithOutValue +"':" + value + "}" + ", " + "{'" + jsonXpathWithOutValue + postfixForOldPrimitiveValue +"':" + value + "}" + "]}"
     }
   }
-
-  import com.thoughtstream.audit.process.QueryOperator._
   private def jsonQueryConverter(query: CompositeQuery): String = {
     val queryFormat = "{ %s: [%s,%s] }"
     val operatorString = query.operator match {
@@ -49,4 +47,11 @@ trait JsonQueryBuilder {
   }
 
   def build(query: SearchQuery): String = jsonQueryConverter(query)
+
+  def buildSuggestionsQuery(xpath: String): String = {
+    val slashCount = xpath.count(_ == '/')
+    val letterCount = xpath.length
+
+    "{xpath:{$regex: '^"+xpath+"', $options:'i'}, slashCount : "+ slashCount +", letterCount: {$gt : "+ letterCount +" } }"
+  }
 }

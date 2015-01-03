@@ -37,12 +37,14 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
     xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("xpaths")
     collection.drop()
+    xpathCollection.drop()
   }
 
   after {
     //clean up
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
     collection.drop()
+    xpathCollection.drop()
   }
 
   feature("Audit Save & Search Services") {
