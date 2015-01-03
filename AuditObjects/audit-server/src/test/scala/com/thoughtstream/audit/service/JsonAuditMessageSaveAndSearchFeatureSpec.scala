@@ -1,7 +1,7 @@
 package com.thoughtstream.audit.service
 
 import com.github.simplyscala.MongodProps
-import com.mongodb.casbah.MongoConnection
+import com.mongodb.casbah.{MongoCollection, MongoConnection}
 import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor._
 import com.typesafe.scalalogging.StrictLogging
@@ -29,11 +29,13 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
   val mongoDbInstance = new MongoDBInstance(serviceEndpoint, databaseName)
   val jsonStore = MongoAuditMessageStoringService(mongoDbInstance)
   val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
+  var xpathCollection: MongoCollection = null
 
   before {
     logger.debug("starting the server")
     MongoEmbeddedServer.start()
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
+    xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("xpaths")
     collection.drop()
   }
 
@@ -54,8 +56,10 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
         <primitive name="ssn" value="DB123 12S"/>
       </entity>
 
-      val savedJson: String = process(newObj)
-      jsonStore.save(savedJson)
+      val response = process(newObj)
+      val savedJson: String = response.jsonResponse
+
+      jsonStore.save(XMLAuditRequest(newObj))
       logger.info("saved json: "+ Json.prettyPrint(Json.parse(savedJson)))
 
       When("Query with xpaths")
@@ -69,6 +73,10 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
       result = searchService.search("/user=johnf1")
       Then("Result is empty")
       assert(result.size === 0)
+
+      //xpaths count
+      logger.info("saved xpaths: " + xpathCollection.find().toSet)
+      assert(xpathCollection.find().size === 5)
     }
 
     scenario("Search queries with x paths") {
@@ -95,8 +103,10 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
         </collection>
       </entity>
 
-      val savedJson: String = process(newObj, oldObj)
-      jsonStore.save(savedJson)
+      val response = process(newObj, oldObj)
+      val savedJson: String = response.jsonResponse
+
+      jsonStore.save(XMLAuditRequest(newObj, oldObj))
       logger.info("saved json: "+ Json.prettyPrint(Json.parse(savedJson)))
 
       When("Query with xpaths(/user)")

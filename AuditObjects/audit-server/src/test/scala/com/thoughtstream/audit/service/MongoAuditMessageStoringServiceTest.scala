@@ -47,7 +47,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     user.setAddress(new User.Address("22 Dec St", "HA3 6MA"))
     val newObj = XML.loadString(ReflectionUtils.getEntityXml(user))
 
-    consumer.save(processor.process(newObj, oldObj))
+    consumer.save(XMLAuditRequest(newObj, oldObj))
     val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
 
     val result = searchService.search("/User")
@@ -75,7 +75,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
       <primitive name="uidWife" value="123" numeric="true"/>
     </entity>
 
-    consumer.save(processor.process(newObj, oldObj))
+    consumer.save(XMLAuditRequest(newObj, oldObj))
     val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
 
     var result = searchService.search("/user/uidWife=123&&/user/eId=JOHNF")
@@ -145,7 +145,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
       <primitive name="uidWife" value="123" numeric="true"/>
     </entity>
 
-    consumer.save(processor.process(newObj, oldObj))
+    consumer.save(XMLAuditRequest(newObj, oldObj))
 
     val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
 
@@ -248,7 +248,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
       </collection>
     </entity>
 
-    consumer.save(processor.process(newObj, oldObj))
+    consumer.save(XMLAuditRequest(newObj, oldObj))
 
     val userOptional = collection.findOne(JSON.parse("{'user.uid': {$exists: true}}").asInstanceOf[DBObject])
 

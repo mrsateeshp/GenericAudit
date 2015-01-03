@@ -9,12 +9,14 @@ import scala.xml.Elem
  * @author Sateesh
  * @since 12/11/2014
  */
-object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,String] {
+object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,JsonAuditMessageProcessorResponse] {
 
-  override def process(newObject: Elem, oldObject: Elem = <root/>): String = {
-    val result = doConvertToJsonString(performDiffAndMerge(oldObject,newObject))
-    println(result)
-    "{" + result + "}"
+  override def process(newObject: Elem, oldObject: Elem = <root/>): JsonAuditMessageProcessorResponse = {
+    val mergeResults: Seq[(String, AttributeType)] = performDiffAndMerge(oldObject, newObject)
+
+    val result = doConvertToJsonString(mergeResults)
+
+    JsonAuditMessageProcessorResponse("{" + result + "}", mergeResults.map(_._1).toSet)
   }
 
   def compareXpaths(firstStr: String, secondStr: String): Boolean = {
@@ -167,3 +169,5 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,String] {
     extractVariablesWithXpaths(Seq(element), withInitialXpath, result)
   }
 }
+
+final case class JsonAuditMessageProcessorResponse(jsonResponse: String, xpaths: Set[String])

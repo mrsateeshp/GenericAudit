@@ -26,7 +26,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         <primitive name="ssn" value="DB123 12S"/>
       </entity>
 
-      val resultString = process(newObj)
+      val resultString = process(newObj).jsonResponse
       println(resultString)
 
       shouldNotHaveOldEntries(resultString)
@@ -52,7 +52,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         <primitive name="ssn" value="DB123 12S"/>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
@@ -74,7 +74,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </entity>
       </entity>
 
-      val resultString = process(newObj)
+      val resultString = process(newObj).jsonResponse
       println(resultString)
 
       shouldNotHaveOldEntries(resultString)
@@ -107,7 +107,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </entity>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
@@ -134,7 +134,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </valueObject>
       </entity>
 
-      val resultString = process(newObj)
+      val resultString = process(newObj).jsonResponse
       println(resultString)
       shouldNotHaveOldEntries(resultString)
 
@@ -178,7 +178,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </valueObject>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
@@ -222,7 +222,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         <primitive name="uid" value="123" numeric="true"/>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
@@ -268,7 +268,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </collection>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
@@ -309,7 +309,7 @@ class JsonAuditMessageProcessorFeatureSpec extends FeatureSpec {
         </collection>
       </entity>
 
-      val resultString = process(newObj, oldObj)
+      val resultString = process(newObj, oldObj).jsonResponse
       println(resultString)
 
       val resultJson = Json.parse(resultString)
