@@ -11,6 +11,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,6 +26,8 @@ import java.util.List;
 public class GenericAuditClient {
     private String auditServer;
     private JSONParser parser = new JSONParser();
+
+    final Logger logger = LoggerFactory.getLogger(GenericAuditClient.class);
 
     public GenericAuditClient(String auditServer) {
         if (auditServer == null) {
@@ -58,8 +62,7 @@ public class GenericAuditClient {
 
             HttpResponse response = client.execute(post);
 
-            //todo: add logger
-            System.out.println("Response: " + response.toString());
+            logger.debug("Response Header: {}", response.toString());
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -69,14 +72,16 @@ public class GenericAuditClient {
                 result.append(line);
             }
 
-            System.out.println("AuditClient response body: " + result.toString());
+            logger.debug("AuditClient response body: {}", result.toString());
             JSONObject jsonObject = (JSONObject) parser.parse(result.toString());
             Boolean success = (Boolean) jsonObject.get("success");
             if (!success) {
                 String errorMessage = (jsonObject.get("error") != null) ? jsonObject.get("error").toString() : null;
+                logger.error("Audit message save failed with the following error: {}", errorMessage);
                 throw new AuditMessageSaveFailed(errorMessage);
             }
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new AuditMessageSaveFailed(e);
         }
     }

@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * this is copied form spring core(just for the sake of keeping the java client light).
+ *
  * Simple utility class for working with the reflection API and handling
  * reflection exceptions.
  * <p/>
@@ -50,8 +52,8 @@ public class SpringReflectionUtils {
      * @return the corresponding Field object, or <code>null</code> if not found
      */
     public static Field findField(Class<?> clazz, String name, Class<?> type) {
-        //Assert.notNull(clazz, "Class must not be null");
-        //Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
+        Assert.notNull(clazz, "Class must not be null");
+        Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
         Class<?> searchType = clazz;
         while (!Object.class.equals(searchType) && searchType != null) {
             Field[] fields = searchType.getDeclaredFields();
@@ -133,8 +135,8 @@ public class SpringReflectionUtils {
      * @return the Method object, or <code>null</code> if none found
      */
     public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
-        //Assert.notNull(clazz, "Class must not be null");
-        //Assert.notNull(name, "Method name must not be null");
+        Assert.notNull(clazz, "Class must not be null");
+        Assert.notNull(name, "Method name must not be null");
         Class<?> searchType = clazz;
         while (searchType != null) {
             Method[] methods = (searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods());
@@ -323,7 +325,7 @@ public class SpringReflectionUtils {
      * <code>false</code> if it needs to be wrapped
      */
     public static boolean declaresException(Method method, Class<?> exceptionType) {
-        //Assert.notNull(method, "Method must not be null");
+        Assert.notNull(method, "Method must not be null");
         Class<?>[] declaredExceptions = method.getExceptionTypes();
         for (Class<?> declaredException : declaredExceptions) {
             if (declaredException.isAssignableFrom(exceptionType)) {

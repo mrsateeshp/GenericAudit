@@ -4,6 +4,8 @@ import com.thoughtstream.audit.anotation.AuditableEntity;
 import com.thoughtstream.audit.anotation.AuditableField;
 import com.thoughtstream.audit.anotation.AuditableId;
 import com.thoughtstream.audit.anotation.AuditableValueObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.thoughtstream.audit.utils.SpringReflectionUtils.*;
 
@@ -12,14 +14,32 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * input validation is not performed for private methods. consider validating them when making them public.
  * @author Sateesh
  * @since 17/11/2014
  */
 
-//TODO: validate input params for all the methods as it is public api
 public class GenericAuditUtils {
+
+    final static Logger logger = LoggerFactory.getLogger(GenericAuditUtils.class);
+
     private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
     private static final Set<Class<?>> NUMERIC_TYPES = getNumeric();
+
+    public static String getDataSnapshot(Object object) {
+        Assert.notNull(object, "input can not be null.");
+
+        if(!object.getClass().isAnnotationPresent(AuditableEntity.class)){
+            logger.info("AuditableEntity not found in the passed in object [{}], hence throwing IllegalArgumentException", object);
+            throw new IllegalArgumentException("object should be annotated with AuditableEntity");
+        }
+
+        String result = getEntityXml(null, object, false);
+
+        logger.info("Generated data-snapshot is: {}", result);
+
+        return result;
+    }
 
     private static boolean isWrapperType(Class<?> clazz) {
         return WRAPPER_TYPES.contains(clazz);
@@ -103,14 +123,6 @@ public class GenericAuditUtils {
 
     private static String endXMLTag(String tagName){
         return "</"+tagName+">";
-    }
-
-    public static String getDataSnapshot(Object object) {
-        if(!object.getClass().isAnnotationPresent(AuditableEntity.class)){
-            throw new IllegalArgumentException("object should be annotated with AuditableEntity");
-        }
-
-        return getEntityXml(null, object, false);
     }
 
     private static String getEntityXml(String name, Object object, boolean shallow) {
