@@ -16,11 +16,18 @@ import java.util.Set;
  * @author Sateesh
  * @since 17/11/2014
  */
+
+//TODO: validate input params for all the methods as it is public api
 public class ReflectionUtils {
     private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
+    private static final Set<Class<?>> NUMERIC_TYPES = getNumeric();
 
-    public static boolean isWrapperType(Class<?> clazz) {
+    private static boolean isWrapperType(Class<?> clazz) {
         return WRAPPER_TYPES.contains(clazz);
+    }
+
+    private static boolean isNumeric(Class classI) {
+        return NUMERIC_TYPES.contains(classI);
     }
 
     private static Set<Class<?>> getWrapperTypes() {
@@ -37,11 +44,22 @@ public class ReflectionUtils {
         return ret;
     }
 
-    public static String getEntityType(Object object) {
+    private static Set<Class<?>> getNumeric() {
+        Set<Class<?>> ret = new HashSet<Class<?>>();
+        ret.add(Short.class);
+        ret.add(Integer.class);
+        ret.add(Long.class);
+        ret.add(Float.class);
+        ret.add(Double.class);
+
+        return ret;
+    }
+
+    private static String getEntityType(Object object) {
         return object.getClass().getSimpleName();
     }
 
-    public static String getEntityId(Object object) {
+    private static String getEntityId(Object object) {
         for (Field field : object.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(AuditableId.class)) {
 
@@ -51,75 +69,132 @@ public class ReflectionUtils {
         throw new RuntimeException("@AuditableId not found on " + object.getClass());
     }
 
-
-    public static String getEntityXml(Object object) {
-        return getEntityXml(object, false, null);
+    private static String getPrimitiveXML(String name, Object value) {
+        return getPrimitiveXML(name, value.toString(), isNumeric(value.getClass()));
     }
 
-    public static String getEntityXml(Object object, boolean shallow, String name) {
+    private static String getPrimitiveXML(String name, String value) {
+        return getPrimitiveXML(name, value, false);
+    }
+
+    private static String getPrimitiveXML(String name, String value, boolean isNumeric) {
+        if(isNumeric){
+            return String.format("<primitive name=\"%s\" value=\"%s\" numeric=\"true\"/>", name, value);
+        } else {
+            return String.format("<primitive name=\"%s\" value=\"%s\"/>", name, value);
+        }
+    }
+
+    private static String getCompositeXml(String fieldName, Object fieldObject) {
+        if (fieldObject.getClass().isAnnotationPresent(AuditableEntity.class)) {
+            return getEntityXml(fieldName, fieldObject, true);
+        } else if (fieldObject.getClass().isAnnotationPresent(AuditableValueObject.class)) {
+            return getValueObjectXml(fieldName, fieldObject);
+        } else if(fieldObject instanceof Iterable){
+            return getCollectionXml(fieldName, (Iterable)fieldObject);
+        }else {
+            //since the field value is not auditable, it takes toString of it.
+            return getPrimitiveXML(fieldName, fieldObject);
+        }
+    }
+
+    private static String beginXMLTag(String tagName, String nameValue){
+        return "<"+tagName+" name=\"" + nameValue + "\">";
+    }
+
+    private static String endXMLTag(String tagName){
+        return "</"+tagName+">";
+    }
+
+    public static String getAuditMessageXml(Object object) {
+        if(!object.getClass().isAnnotationPresent(AuditableEntity.class)){
+            throw new IllegalArgumentException("object should be annotated with AuditableEntity");
+        }
+
+        return getEntityXml(null, object, false);
+    }
+
+    private static String getEntityXml(String name, Object object, boolean shallow) {
         if (name == null) {
             name = getEntityType(object);
         }
-        String result = "<entity name=\"" + name + "\">";
-        result = result + "<primitive name=\"eId\" value=\"" + getEntityId(object) + "\"/>";
-        result = result + "<primitive name=\"type\" value=\"" + getEntityType(object) + "\"/>";
+        String result = beginXMLTag("entity",name);
+        result = result + getPrimitiveXML("eId", getEntityId(object));
+        result = result + getPrimitiveXML("eType", getEntityType(object));
 
         if (!shallow) {
-            for (Field field : object.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(AuditableField.class)) {
-                    Object fieldObject = getField(field, object);
-                    if (fieldObject == null) {
-                        result = result + String.format("<primitive name=\"%s\" value=\"%s\"/>", field.getName(), "");
-                    } else {
-                        if (field.getType().isPrimitive() || isWrapperType(fieldObject.getClass())) {
-                            result = result + String.format("<primitive name=\"%s\" value=\"%s\"/>", field.getName(), fieldObject.toString());
-                        } else {
-                            result = result + getCompositeXml(field, fieldObject);
-                        }
-                    }
-                }
-            }
+            result = result + getXMLForFields(object);
         }
-        return result + "</entity>";
+        return result + endXMLTag("entity");
     }
 
-    private static String getCompositeXml(Field field, Object fieldObject) {
+    private static String getCollectionXml(String name, Iterable iterableObject) {
+
+        String result = beginXMLTag("collection",name);
+
+        int count = 1;
+        for(Object object : iterableObject){
+            result = result+ getXMLForObject(count+"",object);
+            count ++;
+        }
+
+        return result + endXMLTag("collection");
+    }
+
+    private static String getValueObjectXml(String name, Object object) {
+        if (name == null) {
+            name = getEntityType(object);
+        }
+        String result = beginXMLTag("valueObject",name);
+
+        result = result + getXMLForFields(object);
+
+        return result + endXMLTag("valueObject");
+    }
+
+    private static String getXMLForFields(Object object) {
         String result = "";
-        if (fieldObject.getClass().isAnnotationPresent(AuditableEntity.class)) {
-            result = result + getEntityXml(fieldObject, true, field.getName());
-        } else if (fieldObject.getClass().isAnnotationPresent(AuditableValueObject.class)) {
-            result = result + getValueObjectXml(fieldObject, field.getName());
-        } else {
-            result = result + getCompositeXml(field, fieldObject);
+
+        for (Field field : object.getClass().getDeclaredFields()) {
+            result = result + getXMLForField(field, object);
         }
         return result;
     }
 
-    public static String getValueObjectXml(Object object, String name) {
-        if (name == null) {
-            name = getEntityType(object);
+    private static String getXMLForField(Field field, Object targetObject) {
+        if (field.isAnnotationPresent(AuditableField.class)) {
+            Object fieldObject = getField(field, targetObject);
+            return getXMLForObject(field, fieldObject);
+        } else {
+            return "";
         }
-        String result = "<valueObject name=\"" + name + "\">";
+    }
 
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(AuditableField.class)) {
-                Object fieldObject = getField(field, object);
-                if (fieldObject == null) {
-                    result = result + String.format("<primitive name=\"%s\" value=\"%s\"/>", field.getName(), "");
-                } else {
-                    if (field.getType().isPrimitive() || isWrapperType(fieldObject.getClass())) {
-                        result = result + String.format("<primitive name=\"%s\" value=\"%s\"/>", field.getName(), fieldObject.toString());
-                    } else {
-                        //todo
-                    }
-                }
+    private static String getXMLForObject(Field field, Object fieldObject) {
+        return getXMLForObject(field.getName(), field.getType().isPrimitive(), fieldObject);
+    }
+
+    private static String getXMLForObject(String fieldName, Object fieldObject) {
+        return getXMLForObject(fieldName, false, fieldObject);
+    }
+
+    private static String getXMLForObject(String fieldName, boolean isFieldPrimitive, Object fieldObject) {
+        if (fieldObject == null) {
+            return getPrimitiveXML(fieldName, "");
+        } else {
+            if (isFieldPrimitive || isWrapperType(fieldObject.getClass())) {
+                return getPrimitiveXML(fieldName, fieldObject);
+            } else {
+                return getCompositeXml(fieldName, fieldObject);
             }
         }
-        return result + "</valueObject>";
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(getEntityXml(new User(123, "tony")));
-//        System.out.println(User.class.getField("name").getType().isPrimitive());
+        User tony = new User(123, "tony");
+        User.Address address = new User.Address("26 May St", "FL11 3TY");
+        tony.setAddress(address);
+        tony.addFriend(new User(345,"rohitm"));
+        System.out.println(getAuditMessageXml(tony));
     }
 }

@@ -19,3 +19,5 @@ example:
    [WARNING] It would fail on the following input: QueryOperator(_, _)
    [WARNING]     val operatorString = query.operator match {
    [WARNING]
+
+4) //TODO: validate input params for all the methods as it is public api

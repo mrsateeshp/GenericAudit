@@ -42,10 +42,10 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val user = new User(1,"user1")
-    val oldObj = XML.loadString(ReflectionUtils.getEntityXml(user))
+    val oldObj = XML.loadString(ReflectionUtils.getAuditMessageXml(user))
     user.setName("user2")
     user.setAddress(new User.Address("22 Dec St", "HA3 6MA"))
-    val newObj = XML.loadString(ReflectionUtils.getEntityXml(user))
+    val newObj = XML.loadString(ReflectionUtils.getAuditMessageXml(user))
 
     consumer.save(AuditSaveRequest(XMLDataSnapshot(newObj, oldObj)))
     val searchService = new MongoBasedAuditSearchService(mongoDbInstance)

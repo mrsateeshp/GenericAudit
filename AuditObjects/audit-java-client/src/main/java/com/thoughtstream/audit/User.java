@@ -5,12 +5,15 @@ import com.thoughtstream.audit.anotation.AuditableField;
 import com.thoughtstream.audit.anotation.AuditableId;
 import com.thoughtstream.audit.anotation.AuditableValueObject;
 
+import java.util.Set;
+
 /**
  * just an example entity
  *
  * @author Sateesh
  * @since 16/11/2014
  */
+
 @AuditableEntity("User")
 public class User {
     @AuditableValueObject("Address")
@@ -41,7 +44,10 @@ public class User {
     private String name;
 
     @AuditableField
-    private Address address = new Address("11 June St", "MA2 3HG");
+    private Address address;
+
+    @AuditableField
+    private Set<User> friends = new java.util.HashSet<User>();
 
     public User(int uid, String name) {
         this.uid = uid;
@@ -66,6 +72,18 @@ public class User {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Set<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<User> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriend(User user) {
+        friends.add(user);
     }
 }
 
