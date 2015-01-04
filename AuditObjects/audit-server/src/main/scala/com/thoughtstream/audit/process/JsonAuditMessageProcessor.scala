@@ -12,11 +12,17 @@ import scala.xml.Elem
 object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,JsonAuditMessageProcessorResponse] {
 
   override def process(newObject: Elem, oldObject: Elem = <root/>): JsonAuditMessageProcessorResponse = {
+    require(newObject != null)
+    require(oldObject != null)
+
     val mergeResults: Seq[(String, AttributeType)] = performDiffAndMerge(oldObject, newObject)
 
     val result = doConvertToJsonString(mergeResults)
 
-    JsonAuditMessageProcessorResponse("{" + result + "}", mergeResults.map(_._1).toSet)
+    //remove collection xpaths from the results as search using collection attributes is not supported yet.
+    val collectionXpaths = mergeResults.filter(_._2.isInstanceOf[Collection]).map(_._1)
+    val xPaths = mergeResults.filter(x=> !collectionXpaths.exists(y => x._1.startsWith(y))).map(_._1).toSet
+    JsonAuditMessageProcessorResponse("{" + result + "}", xPaths)
   }
 
   def compareXpaths(firstStr: String, secondStr: String): Boolean = {

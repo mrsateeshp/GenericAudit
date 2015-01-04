@@ -61,7 +61,7 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
       val response = process(newObj)
       val savedJson: String = response.jsonResponse
 
-      jsonStore.save(XMLAuditRequest(newObj))
+      jsonStore.save(AuditSaveRequest(XMLDataSnapshot(newObj), AuditMetaData("robind")))
       logger.info("saved json: "+ Json.prettyPrint(Json.parse(savedJson)))
 
       When("Query with xpaths")
@@ -108,7 +108,7 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
       val response = process(newObj, oldObj)
       val savedJson: String = response.jsonResponse
 
-      jsonStore.save(XMLAuditRequest(newObj, oldObj))
+      jsonStore.save(AuditSaveRequest(XMLDataSnapshot(newObj, oldObj), AuditMetaData("mathewa")))
       logger.info("saved json: "+ Json.prettyPrint(Json.parse(savedJson)))
 
       When("Query with xpaths(/user)")

@@ -52,6 +52,6 @@ trait JsonQueryBuilder {
     val slashCount = xpath.count(_ == '/')
     val letterCount = xpath.length
 
-    "{xpath:{$regex: '^"+xpath+"', $options:'i'}, slashCount : "+ slashCount +", letterCount: {$gt : "+ letterCount +" } }"
+    "{xpath:{$regex: '^"+xpath+"', $options:'i'}, slashCount : "+ slashCount +", letterCount: {$gte : "+ letterCount +" } }"
   }
 }

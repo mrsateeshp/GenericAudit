@@ -21,7 +21,7 @@ trait AuditMessageStoringService[A] {
 
 import com.mongodb.casbah.Imports._
 
-case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection", xpathCollectionName: String = "xpaths") extends AuditMessageStoringService[XMLAuditRequest] {
+case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection", xpathCollectionName: String = "xpaths") extends AuditMessageStoringService[AuditSaveRequest[XMLDataSnapshot]] {
   private val serviceEndpoint: (String, Int) = mongoDbInstance.serviceEndpoint
   private val databaseName: String = mongoDbInstance.databaseName
 
@@ -29,18 +29,18 @@ case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, col
   private val xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(xpathCollectionName)
 
   //todo: enhance it to derive entity type and use to relate to collection
-  override def save(request: XMLAuditRequest): Unit = {
-    val processorResponse = JsonAuditMessageProcessor.process(request.newObject, request.oldObject)
+  override def save(request: AuditSaveRequest[XMLDataSnapshot]): Unit = {
+    val processorResponse = JsonAuditMessageProcessor.process(request.dataSnapshot.newObject, request.dataSnapshot.oldObject)
     val auditMessage = processorResponse.jsonResponse
 
     val dbObject = JSON.parse(auditMessage).asInstanceOf[DBObject]
-    val auditInfo: BasicDBObject = new BasicDBObject()
+    val metaDataDbObject: BasicDBObject = new BasicDBObject()
 
-    //todo: for now just adding some static data.
-    auditInfo.put("who", "unknown")
-    auditInfo.put("when", new Date())
+    metaDataDbObject.put("who", request.who)
+    metaDataDbObject.put("when", request.when)
+    metaDataDbObject.put("oType", request.operationType)
 
-    dbObject.put("auditInfo", auditInfo)
+    dbObject.put("mData", metaDataDbObject)
     collection += dbObject
 
     //storing xpaths
@@ -57,4 +57,33 @@ case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, col
   }
 }
 
-final case class XMLAuditRequest(newObject: Elem, oldObject: Elem = <root/>)
+trait OperationTypeAware {
+  def operationType: String
+}
+
+final case class XMLDataSnapshot(private val _newObject: Elem = null, private val _oldObject: Elem = null) extends OperationTypeAware {
+  require(_newObject != null || _oldObject != null, "at least one input param should be non-null")
+
+  val newObject = if (_newObject == null) <root/> else _newObject
+  val oldObject = if (_oldObject == null) <root/> else _oldObject
+
+  override def operationType: String = {
+    (_newObject, _oldObject) match {
+      case (null, x: Elem) => "Delete"
+      case (x: Elem, null) => "Insert"
+      case _ => "Update"
+    }
+  }
+}
+
+final case class AuditMetaData(who: String, when: Date = null, operationType: String = null)
+
+final case class AuditSaveRequest[A <: OperationTypeAware](dataSnapshot: A, private val metaData: AuditMetaData = null) {
+  require(dataSnapshot != null)
+
+  val who = if (metaData == null || metaData.who == null) "unknown" else metaData.who
+
+  def when = if (metaData == null || metaData.when == null) new Date() else metaData.when
+
+  val operationType = if (metaData == null || metaData.operationType == null) dataSnapshot.operationType else metaData.operationType
+}

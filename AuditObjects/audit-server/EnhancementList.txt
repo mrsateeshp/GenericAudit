@@ -14,3 +14,8 @@ example:
                         --xyz
 
 2) MongoBasedAuditSearchService --> exception handling in general
+
+3) [WARNING] C:\Sateesh\Dropbox\Development\GitHub\services\services\AuditObjects\audit-server\src\main\scala\com\thoughtstream\audit\process\JsonQueryBuilder.scala:34: warning: match may not be exhaustive.
+   [WARNING] It would fail on the following input: QueryOperator(_, _)
+   [WARNING]     val operatorString = query.operator match {
+   [WARNING]

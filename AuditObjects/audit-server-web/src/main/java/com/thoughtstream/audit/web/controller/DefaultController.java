@@ -8,6 +8,7 @@ import com.thoughtstream.audit.web.dto.AuditSearchResult;
 import com.thoughtstream.audit.web.dto.AuditSearchSuggestions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ import scala.collection.*;
 import scala.collection.Iterable;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -51,6 +52,31 @@ public class DefaultController {
         return response;
     }
 
+    @RequestMapping(value = {"/web/searchForAuditEvents"}, method = RequestMethod.GET)
+    public ModelAndView searchForAuditEvents(
+            @RequestParam(value = "query") String currentQuery,
+            @RequestParam(value = "fromDate", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") Date fromDate,
+            @RequestParam(value = "toDate", required = false) @DateTimeFormat(pattern = "yyyy-mm-dd") Date toDate,
+            @RequestParam(value = "noOfRows", required = false) Integer noOfRows,
+            @RequestParam(value = "fromRow", required = false) Integer fromRow
+    ) {
+        currentQuery = StringUtils.trimWhitespace(currentQuery);
+        List<AuditSearchResult> results = new ArrayList<AuditSearchResult>();
+
+        Iterable<MongoDBSearchResult> searchResult = auditSearchService.search(currentQuery, fromDate, toDate, noOfRows == null ? 0 : 10, fromRow == null ? 0 : fromRow);
+        for(MongoDBSearchResult mongoDBSearchResult : scala.collection.JavaConversions.asJavaCollection(searchResult)){
+            results.add(
+                    new AuditSearchResult(mongoDBSearchResult.id(), mongoDBSearchResult.metaData(),
+                            FancyTreeProcessor.transformToPresentableJsNodes(mongoDBSearchResult.document()).head().toString())
+            );
+        }
+
+        ModelAndView modelAndView = new ModelAndView("RenderAuditEvents");
+        modelAndView.addObject("resultList", results);
+
+        return modelAndView;
+    }
+
     @RequestMapping(value = {"/"}, method = RequestMethod.GET)
     public ModelAndView home() {
 
@@ -61,8 +87,7 @@ public class DefaultController {
             MongoDBSearchResult mongoDBSearchResult = iterator.next();
 
             results.add(
-                    new AuditSearchResult(mongoDBSearchResult.id(), mongoDBSearchResult.auditInfo().who(),
-                    mongoDBSearchResult.auditInfo().when(),
+                    new AuditSearchResult(mongoDBSearchResult.id(), mongoDBSearchResult.metaData(),
                     FancyTreeProcessor.transformToPresentableJsNodes(mongoDBSearchResult.document()).head().toString())
             );
         }

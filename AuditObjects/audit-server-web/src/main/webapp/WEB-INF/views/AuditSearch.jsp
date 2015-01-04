@@ -10,7 +10,13 @@
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
     <link rel="stylesheet" href="/resources/demos/style.css">
+    <!-- Include Fancytree skin and library -->
 
+  <link href="http://cdn.jsdelivr.net/jquery.fancytree/2.4.1/skin-win8/ui.fancytree.min.css" rel="stylesheet" type="text/css">
+
+  <script src="http://cdn.jsdelivr.net/jquery.fancytree/2.4.1/jquery.fancytree-all.min.js" type="text/javascript"></script>
+
+  <!-- Initialize the tree when page is loaded -->
     <script>
         function acceptSuggestion(currentStr, suggestedStr){
             var result = "";
@@ -50,7 +56,7 @@
             var currentQuery = $("#searchQuery").val();
             var fromDate = $("#fromDatepicker").val();
             var toDate = $("#toDatepicker").val();
-            $("#searchResults").load("$(contextPath}/web/searchForAuditEvents?query=" +
+            $("#searchResults").load("${contextPath}/web/searchForAuditEvents?query=" +
                 encodeURIComponent(currentQuery) + "&&fromDate=" + fromDate + "&&toDate=" + toDate);
             return;
         }

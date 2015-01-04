@@ -1,5 +1,7 @@
 package com.thoughtstream.audit.web.dto;
 
+import com.thoughtstream.audit.service.AuditMetaData;
+
 import java.util.Date;
 
 /**
@@ -10,12 +12,14 @@ public class AuditSearchResult {
     private String id;
     private String who;
     private Date when ;
+    private String operationType;
     private String jsonString;
 
-    public AuditSearchResult(String id, String who, Date when, String jsonString) {
+    public AuditSearchResult(String id, AuditMetaData auditMetaData, String jsonString) {
         this.id = id;
-        this.who = who;
-        this.when = when;
+        this.who = auditMetaData.who();
+        this.when = auditMetaData.when();
+        this.operationType = auditMetaData.operationType();
         this.jsonString = jsonString;
     }
 
@@ -33,5 +37,9 @@ public class AuditSearchResult {
 
     public String getJsonString() {
         return jsonString;
+    }
+
+    public String getOperationType() {
+        return operationType;
     }
 }

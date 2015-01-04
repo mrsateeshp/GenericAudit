@@ -49,16 +49,17 @@ trait SearchQueryBuilder {
   }
 
   def extractLastQueryPath(query: String): Option[String] = {
-    validateForSingleQuery(query)
 
     if(query==null || query.isEmpty){
       None
     } else {
-      Some(query.replaceAll("=[^=/]*/","/").split("=").head)
+      val lastQuery = subStringLastQuery(query)
+      validateForSingleQuery(lastQuery)
+      Some(lastQuery.replaceAll("=[^=/]*/","/").split("=").head)
     }
   }
 
-  def subStringLastQuery(currentQuery: String): String = {
+  private def subStringLastQuery(currentQuery: String): String = {
     if(currentQuery.trim.isEmpty){
       currentQuery.trim
     } else {
@@ -74,7 +75,7 @@ trait SearchQueryBuilder {
     }
   }
 
-  def validateForSingleQuery(currentQuery: String): Unit = {
+  private def validateForSingleQuery(currentQuery: String): Unit = {
     require(currentQuery!=null)
 
     for(operator <- supportedOperatorsInOrderOfPrecedence){
