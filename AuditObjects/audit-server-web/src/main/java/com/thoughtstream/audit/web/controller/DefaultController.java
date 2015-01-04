@@ -3,6 +3,7 @@ package com.thoughtstream.audit.web.controller;
 import com.thoughtstream.audit.bean.MongoDBInstance;
 import com.thoughtstream.audit.process.FancyTreeProcessor;
 import com.thoughtstream.audit.service.*;
+import com.thoughtstream.audit.web.dto.AuditSaveResponse;
 import com.thoughtstream.audit.web.dto.AuditSearchResult;
 import com.thoughtstream.audit.web.dto.AuditSearchSuggestions;
 import org.slf4j.Logger;
@@ -82,6 +83,27 @@ public class DefaultController {
     @RequestMapping(value = {"/testAuditMessage"}, method = RequestMethod.GET)
     public String testAuditMessage() {
         return "TestAuditMessage";
+    }
+
+    @RequestMapping(value = {"/api/saveAuditEvent"}, method = RequestMethod.POST)
+    @ResponseBody
+    public AuditSaveResponse saveAuditEventFromApi(
+            @RequestParam(value = "newObjectXML", required = false) String newObjectXML,
+            @RequestParam(value = "oldObjectXML", required = false) String oldObjectXML,
+            @RequestParam(value = "who", required = false) String who,
+            @RequestParam(value = "when", required = false) Long when,
+            @RequestParam(value = "operationType", required = false) String operationType
+    ) {
+
+        try {
+            saveAuditEvent(newObjectXML,oldObjectXML,who,when,operationType);
+
+            return new AuditSaveResponse(true,null);
+        } catch (Exception e) {
+            logger.error("Exception saving audit message."+ e);
+            e.printStackTrace();
+            return new AuditSaveResponse(false,e.getMessage());
+        }
     }
 
     @RequestMapping(value = {"/web/saveAuditEvent"}, method = RequestMethod.POST)

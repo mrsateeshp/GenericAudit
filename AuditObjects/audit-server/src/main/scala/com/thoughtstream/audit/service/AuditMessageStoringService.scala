@@ -82,7 +82,7 @@ final case class XMLDataSnapshot(private val _newObject: Elem = null, private va
   override def operationType: String = {
     (_newObject, _oldObject) match {
       case (null, x: Elem) => "Delete"
-      case (x: Elem, null) => "Insert"
+      case (x: Elem, null) => "Create"
       case _ => "Update"
     }
   }

@@ -4,14 +4,10 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.bean.MongoDBInstance
-import com.thoughtstream.audit.demo.User
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
-import com.thoughtstream.audit.utils.GenericAuditUtils
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import play.api.libs.json.Json
-
-import scala.xml.XML
 
 /**
  * Integration test
@@ -35,25 +31,6 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     //clean up
     val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)("defCollection")
     collection.drop()
-  }
-
-  test("testing with real objects") {
-    val processor = JsonAuditMessageProcessor
-    val consumer = MongoAuditMessageStoringService(mongoDbInstance)
-
-    val user = new User(1,"user1")
-    val oldObj = XML.loadString(GenericAuditUtils.getAuditMessageXml(user))
-    user.setName("user2")
-    user.setAddress(new User.Address("22 Dec St", "HA3 6MA"))
-    val newObj = XML.loadString(GenericAuditUtils.getAuditMessageXml(user))
-
-    consumer.save(AuditSaveRequest(XMLDataSnapshot(newObj, oldObj)))
-    val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
-
-    val result = searchService.search("/User")
-
-    assert(result.size === 1)
-    println(Json.prettyPrint(result.head.document))
   }
 
   test("first record save to & retrieve from MongoDb") {

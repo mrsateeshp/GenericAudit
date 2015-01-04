@@ -6,12 +6,27 @@
 <body>
 
 <form action="${contextPath}/web/saveAuditEvent" method="post">
-Old Object:<br>
-<textarea id="oldObjectXML" name="oldObjectXML" rows="10" cols="200"></textarea>
+
+New Object:<br>
+<textarea id="newObjectXML" name="newObjectXML" rows="20" cols="200">
+  <entity name="user">
+    <valueObject name="job">
+      <valueObject name="companyDetails">
+        <primitive name="established" value="2010" numeric="true"/>
+        <primitive name="name" value="Reactive Solutions"/>
+      </valueObject>
+      <primitive name="designation" value="Principal Engineer"/>
+    </valueObject>
+    <primitive name="eId" value="johnf"/>
+    <primitive name="eType" value="user"/>
+    <primitive name="uid" value="123" numeric="true"/>
+  </entity>
+</textarea>
 
 <br>
-New Object:<br>
-<textarea id="newObjectXML" name="newObjectXML" rows="10" cols="200"></textarea>
+
+Old Object:<br>
+<textarea id="oldObjectXML" name="oldObjectXML" rows="20" cols="200"></textarea>
 
 <br>
 Who:<br>

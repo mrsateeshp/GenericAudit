@@ -1,6 +1,5 @@
 package com.thoughtstream.audit.utils;
 
-import com.thoughtstream.audit.demo.User;
 import com.thoughtstream.audit.anotation.AuditableEntity;
 import com.thoughtstream.audit.anotation.AuditableField;
 import com.thoughtstream.audit.anotation.AuditableId;
@@ -106,7 +105,7 @@ public class GenericAuditUtils {
         return "</"+tagName+">";
     }
 
-    public static String getAuditMessageXml(Object object) {
+    public static String getDataSnapshot(Object object) {
         if(!object.getClass().isAnnotationPresent(AuditableEntity.class)){
             throw new IllegalArgumentException("object should be annotated with AuditableEntity");
         }
@@ -188,13 +187,5 @@ public class GenericAuditUtils {
                 return getCompositeXml(fieldName, fieldObject);
             }
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        User tony = new User(123, "tony");
-        User.Address address = new User.Address("26 May St", "FL11 3TY");
-        tony.setAddress(address);
-        tony.addFriend(new User(345,"rohitm"));
-        System.out.println(getAuditMessageXml(tony));
     }
 }
