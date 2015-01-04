@@ -7,7 +7,7 @@ import com.mongodb.util.JSON
 import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.{XpathToJsonConverter, JsonAuditMessageProcessor}
 
-import scala.xml.Elem
+import scala.xml.{XML, Elem}
 
 /**
  *
@@ -30,7 +30,15 @@ case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, col
 
   //todo: enhance it to derive entity type and use to relate to collection
   override def save(request: AuditSaveRequest[XMLDataSnapshot]): Unit = {
-    val processorResponse = JsonAuditMessageProcessor.process(request.dataSnapshot.newObject, request.dataSnapshot.oldObject)
+
+    //todo: tactical fix for delete, need to revisit it. for now, reversing the order when new object is not present
+    val processorResponse = if(request.dataSnapshot.newObject == <root/>) {
+      JsonAuditMessageProcessor.process(request.dataSnapshot.oldObject, request.dataSnapshot.newObject)
+    }
+    else {
+      JsonAuditMessageProcessor.process(request.dataSnapshot.newObject, request.dataSnapshot.oldObject)
+    }
+
     val auditMessage = processorResponse.jsonResponse
 
     val dbObject = JSON.parse(auditMessage).asInstanceOf[DBObject]
@@ -64,6 +72,10 @@ trait OperationTypeAware {
 final case class XMLDataSnapshot(private val _newObject: Elem = null, private val _oldObject: Elem = null) extends OperationTypeAware {
   require(_newObject != null || _oldObject != null, "at least one input param should be non-null")
 
+  def this(newStr: String, oldStr: String) =
+    this(if (newStr != null) XML.loadString(newStr) else null, if (oldStr != null) XML.loadString(oldStr) else null)
+
+
   val newObject = if (_newObject == null) <root/> else _newObject
   val oldObject = if (_oldObject == null) <root/> else _oldObject
 
@@ -76,7 +88,7 @@ final case class XMLDataSnapshot(private val _newObject: Elem = null, private va
   }
 }
 
-final case class AuditMetaData(who: String, when: Date = null, operationType: String = null)
+final case class AuditMetaData(who: String = null, when: Date = null, operationType: String = null)
 
 final case class AuditSaveRequest[A <: OperationTypeAware](dataSnapshot: A, private val metaData: AuditMetaData = null) {
   require(dataSnapshot != null)

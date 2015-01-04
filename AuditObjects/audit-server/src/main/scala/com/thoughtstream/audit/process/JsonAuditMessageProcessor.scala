@@ -13,6 +13,7 @@ object JsonAuditMessageProcessor extends AuditMessageProcessor[Elem,JsonAuditMes
 
   override def process(newObject: Elem, oldObject: Elem = <root/>): JsonAuditMessageProcessorResponse = {
     require(newObject != null)
+    require(newObject != <root/>)
     require(oldObject != null)
 
     val mergeResults: Seq[(String, AttributeType)] = performDiffAndMerge(oldObject, newObject)

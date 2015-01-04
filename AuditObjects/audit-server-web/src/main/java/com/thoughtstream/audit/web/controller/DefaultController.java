@@ -2,8 +2,7 @@ package com.thoughtstream.audit.web.controller;
 
 import com.thoughtstream.audit.bean.MongoDBInstance;
 import com.thoughtstream.audit.process.FancyTreeProcessor;
-import com.thoughtstream.audit.service.MongoBasedAuditSearchService;
-import com.thoughtstream.audit.service.MongoDBSearchResult;
+import com.thoughtstream.audit.service.*;
 import com.thoughtstream.audit.web.dto.AuditSearchResult;
 import com.thoughtstream.audit.web.dto.AuditSearchSuggestions;
 import org.slf4j.Logger;
@@ -30,6 +29,9 @@ public class DefaultController {
     static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
     private MongoBasedAuditSearchService auditSearchService =
             new MongoBasedAuditSearchService(new MongoDBInstance(new Tuple2<String, Object>("localhost", 27017), "AuditObjects"), "defCollection", "xpaths");
+
+    private MongoAuditMessageStoringService auditSavingService =
+            new MongoAuditMessageStoringService(new MongoDBInstance(new Tuple2<String, Object>("localhost", 27017), "AuditObjects"), "defCollection", "xpaths");
 
     @RequestMapping(value = {"/search"}, method = RequestMethod.GET)
     public String serach() {
@@ -75,6 +77,35 @@ public class DefaultController {
         modelAndView.addObject("resultList", results);
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = {"/testAuditMessage"}, method = RequestMethod.GET)
+    public String testAuditMessage() {
+        return "TestAuditMessage";
+    }
+
+    @RequestMapping(value = {"/web/saveAuditEvent"}, method = RequestMethod.POST)
+    public String saveAuditEvent(
+            @RequestParam(value = "newObjectXML", required = false) String newObjectXML,
+            @RequestParam(value = "oldObjectXML", required = false) String oldObjectXML,
+            @RequestParam(value = "who", required = false) String who,
+            @RequestParam(value = "when", required = false) Long when,
+            @RequestParam(value = "toDate", required = false) String operationType
+    ) {
+
+        if(StringUtils.isEmpty(newObjectXML)) {
+            newObjectXML = null;
+        }
+
+        if(StringUtils.isEmpty(oldObjectXML)) {
+            oldObjectXML = null;
+        }
+
+        XMLDataSnapshot dataSnapshot = new XMLDataSnapshot(newObjectXML, oldObjectXML);
+        AuditSaveRequest<XMLDataSnapshot> saveRequest = new AuditSaveRequest<XMLDataSnapshot>(dataSnapshot,new AuditMetaData(who, when != null ? new Date(when) : null , operationType));
+        auditSavingService.save(saveRequest);
+
+        return serach();
     }
 
     @RequestMapping(value = {"/"}, method = RequestMethod.GET)
