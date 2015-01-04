@@ -3,10 +3,10 @@ package com.thoughtstream.audit.service
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.util.JSON
-import com.thoughtstream.audit.User
 import com.thoughtstream.audit.bean.MongoDBInstance
+import com.thoughtstream.audit.demo.User
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
-import com.thoughtstream.audit.utils.ReflectionUtils
+import com.thoughtstream.audit.utils.GenericAuditUtils
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import play.api.libs.json.Json
@@ -42,10 +42,10 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
     val consumer = MongoAuditMessageStoringService(mongoDbInstance)
 
     val user = new User(1,"user1")
-    val oldObj = XML.loadString(ReflectionUtils.getAuditMessageXml(user))
+    val oldObj = XML.loadString(GenericAuditUtils.getAuditMessageXml(user))
     user.setName("user2")
     user.setAddress(new User.Address("22 Dec St", "HA3 6MA"))
-    val newObj = XML.loadString(ReflectionUtils.getAuditMessageXml(user))
+    val newObj = XML.loadString(GenericAuditUtils.getAuditMessageXml(user))
 
     consumer.save(AuditSaveRequest(XMLDataSnapshot(newObj, oldObj)))
     val searchService = new MongoBasedAuditSearchService(mongoDbInstance)

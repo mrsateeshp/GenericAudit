@@ -1,4 +1,4 @@
-package com.thoughtstream.audit;
+package com.thoughtstream.audit.demo;
 
 import com.thoughtstream.audit.anotation.AuditableEntity;
 import com.thoughtstream.audit.anotation.AuditableField;

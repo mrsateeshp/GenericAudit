@@ -1,6 +1,6 @@
 package com.thoughtstream.audit.utils;
 
-import com.thoughtstream.audit.User;
+import com.thoughtstream.audit.demo.User;
 import com.thoughtstream.audit.anotation.AuditableEntity;
 import com.thoughtstream.audit.anotation.AuditableField;
 import com.thoughtstream.audit.anotation.AuditableId;
@@ -18,7 +18,7 @@ import java.util.Set;
  */
 
 //TODO: validate input params for all the methods as it is public api
-public class ReflectionUtils {
+public class GenericAuditUtils {
     private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
     private static final Set<Class<?>> NUMERIC_TYPES = getNumeric();
 
