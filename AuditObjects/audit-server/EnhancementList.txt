@@ -20,6 +20,27 @@ example:
    [WARNING]     val operatorString = query.operator match {
    [WARNING]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------
+COMPLETED
+------------------------------------------------------------------------------------------
 4) //TODO: validate input params for all the methods as it is public api
 
 5) provide logger for java client
