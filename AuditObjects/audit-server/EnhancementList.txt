@@ -1,18 +1,3 @@
-1) current old values are at same level as current value, should be stored as nested.
-example:
-    Current: root
-                --fname
-                    --abc
-                --fname_old
-                    --xyz
-
-    After enhancement:
-             root
-                --fname
-                    --abc
-                    --oldValue
-                        --xyz
-
 2) MongoBasedAuditSearchService --> exception handling in general
 
 3) [WARNING] C:\Sateesh\Dropbox\Development\GitHub\services\services\AuditObjects\audit-server\src\main\scala\com\thoughtstream\audit\process\JsonQueryBuilder.scala:34: warning: match may not be exhaustive.
@@ -41,6 +26,21 @@ example:
 ------------------------------------------------------------------------------------------
 COMPLETED
 ------------------------------------------------------------------------------------------
+1) current old values are at same level as current value, should be stored as nested.
+example:
+    Current: root
+                --fname
+                    --abc
+                --fname_old
+                    --xyz
+
+    After enhancement:
+             root
+                --fname
+                    --abc
+                    --oldValue
+                        --xyz
+
 4) //TODO: validate input params for all the methods as it is public api
 
 5) provide logger for java client
