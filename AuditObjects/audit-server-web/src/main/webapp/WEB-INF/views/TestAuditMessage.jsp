@@ -26,7 +26,20 @@ New Object:<br>
 <br>
 
 Old Object:<br>
-<textarea id="oldObjectXML" name="oldObjectXML" rows="20" cols="200"></textarea>
+<textarea id="oldObjectXML" name="oldObjectXML" rows="20" cols="200">
+    <entity name="user">
+      <valueObject name="job">
+        <valueObject name="companyDetails">
+          <primitive name="established" value="2009" numeric="true"/>
+          <primitive name="name" value="Direct Solutions"/>
+        </valueObject>
+        <primitive name="designation" value="Software Engineer"/>
+      </valueObject>
+      <primitive name="eId" value="johnf"/>
+      <primitive name="eType" value="user"/>
+      <primitive name="uid" value="456" numeric="true"/>
+    </entity>
+</textarea>
 
 <br>
 Who:<br>
