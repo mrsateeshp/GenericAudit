@@ -1,5 +1,6 @@
 package com.thoughtstream.audit.web.controller;
 
+import com.thoughtstream.audit.MongoEmbeddedServer;
 import com.thoughtstream.audit.process.FancyTreeProcessor;
 import com.thoughtstream.audit.service.*;
 import com.thoughtstream.audit.web.dto.AuditSaveResponse;
@@ -7,6 +8,7 @@ import com.thoughtstream.audit.web.dto.AuditSearchResult;
 import com.thoughtstream.audit.web.dto.AuditSearchSuggestions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -23,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-public class DefaultController {
+public class DefaultController implements DisposableBean{
 
     static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
 
@@ -31,9 +33,25 @@ public class DefaultController {
 
     private AuditMessageStoringService<AuditSaveRequest<XMLDataSnapshot>> auditSavingService;
 
-    public DefaultController(AuditMessageStoringService<AuditSaveRequest<XMLDataSnapshot>> auditSavingService, AuditSearchService<MongoDBSearchResult> auditSearchService) {
+    private boolean startEmbeddedMongo = false;
+
+    public DefaultController(AuditMessageStoringService<AuditSaveRequest<XMLDataSnapshot>> auditSavingService,
+                             AuditSearchService<MongoDBSearchResult> auditSearchService,
+                             boolean startEmbeddedMongo) {
         this.auditSearchService = auditSearchService;
         this.auditSavingService = auditSavingService;
+        this.startEmbeddedMongo = startEmbeddedMongo;
+
+        if(this.startEmbeddedMongo) {
+            MongoEmbeddedServer.start();
+        }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if(startEmbeddedMongo) {
+            MongoEmbeddedServer.stop();
+        }
     }
 
     @RequestMapping(value = {"/search"}, method = RequestMethod.GET)

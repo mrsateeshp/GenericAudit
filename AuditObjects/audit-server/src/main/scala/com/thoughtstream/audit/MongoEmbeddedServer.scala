@@ -1,4 +1,4 @@
-package com.thoughtstream.audit.service
+package com.thoughtstream.audit
 
 import com.github.simplyscala.MongoEmbedDatabase
 
@@ -12,5 +12,5 @@ object MongoEmbeddedServer extends MongoEmbedDatabase{
   val mongoProps = mongoStart(27227)
   def start(){}
 
-//  def stop(){ mongoStop(mongoProps)}
+  def stop(){ mongoStop(mongoProps)}
 }

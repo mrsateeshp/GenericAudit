@@ -3,6 +3,7 @@ package com.thoughtstream.audit.service
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.util.JSON
+import com.thoughtstream.audit.MongoEmbeddedServer
 import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
 import com.typesafe.scalalogging.StrictLogging

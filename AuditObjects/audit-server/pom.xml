@@ -55,7 +55,8 @@
             <groupId>com.github.simplyscala</groupId>
             <artifactId>scalatest-embedmongo_${scala.major.version}</artifactId>
             <version>0.2.2</version>
-            <scope>test</scope>
+            <!--for a quick start-->
+            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>

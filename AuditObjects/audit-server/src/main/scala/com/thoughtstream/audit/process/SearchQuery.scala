@@ -87,7 +87,7 @@ trait SearchQueryBuilder {
   }
 }
 
-sealed case class QueryOperator(sign: String, regex: String)
+sealed abstract class QueryOperator(val sign: String, val regex: String)
 
 object And extends QueryOperator("&&", "&&")
 object Or extends QueryOperator("++", "\\+\\+")

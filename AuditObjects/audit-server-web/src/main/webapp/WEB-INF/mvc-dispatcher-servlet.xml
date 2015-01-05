@@ -60,6 +60,7 @@
 	<bean id="defaultController" class="com.thoughtstream.audit.web.controller.DefaultController">
 		<constructor-arg index="0" ref="mongoAuditMessageStoringService"/>
 		<constructor-arg index="1" ref="mongoBasedAuditSearchService"/>
+		<constructor-arg index="2" value="$APP{startEmbeddedMongo}"/>
 	</bean>
 
 	<mvc:annotation-driven/>

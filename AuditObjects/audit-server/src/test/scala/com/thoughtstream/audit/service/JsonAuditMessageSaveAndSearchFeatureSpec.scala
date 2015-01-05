@@ -2,6 +2,7 @@ package com.thoughtstream.audit.service
 
 import com.github.simplyscala.MongodProps
 import com.mongodb.casbah.{MongoCollection, MongoConnection}
+import com.thoughtstream.audit.MongoEmbeddedServer
 import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor._
 import com.typesafe.scalalogging.StrictLogging
