@@ -10,7 +10,8 @@ Demo instance:
 sample audit message can be sent @ https://generic-audit.herokuapp.com/testAuditMessage  (just click submit)
 
 and search can be performed @ https://generic-audit.herokuapp.com/search (enter /user in Search Query textarea)
-some sample queries:
+some sample queries (with values):
+
 /user=johnf
 
 /user/uid=123
