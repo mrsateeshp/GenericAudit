@@ -12,9 +12,9 @@
     <link rel="stylesheet" href="/resources/demos/style.css">
     <!-- Include Fancytree skin and library -->
 
-  <link href="http://cdn.jsdelivr.net/jquery.fancytree/2.4.1/skin-win8/ui.fancytree.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/jquery.fancytree/2.4.1/skin-win8/ui.fancytree.min.css" rel="stylesheet" type="text/css">
 
-  <script src="http://cdn.jsdelivr.net/jquery.fancytree/2.4.1/jquery.fancytree-all.min.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.fancytree/2.4.1/jquery.fancytree-all.min.js" type="text/javascript"></script>
 
   <!-- Initialize the tree when page is loaded -->
     <script>
