@@ -2,17 +2,32 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<context:component-scan base-package="com.thoughtstream.*" />
 
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesMode">
+			<util:constant
+					static-field="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		</property>
+		<property name="locations">
+			<list>
+				<value>classpath:audit-server-web-${environment}.properties</value>
+			</list>
+		</property>
+		<property name="placeholderPrefix" value="$APP{"/>
+	</bean>
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -22,6 +37,29 @@
 		<property name="suffix">
 			<value>.jsp</value>
 		</property>
+	</bean>
+
+	<bean id="mongoDbInstance" class="com.thoughtstream.audit.bean.MongoDBInstance">
+		<constructor-arg index="0" value="$APP{mongo.server.host}"/>
+		<constructor-arg index="1" value="$APP{mongo.server.port}"/>
+		<constructor-arg index="2" value="$APP{mongo.dbName}"/>
+	</bean>
+
+	<bean id="mongoAuditMessageStoringService" class="com.thoughtstream.audit.service.MongoAuditMessageStoringService">
+		<constructor-arg index="0" ref="mongoDbInstance"/>
+		<constructor-arg index="1" value="$APP{mongo.objectCollection}"/>
+		<constructor-arg index="2" value="$APP{mongo.xpathCollection}"/>
+	</bean>
+
+	<bean id="mongoBasedAuditSearchService" class="com.thoughtstream.audit.service.MongoBasedAuditSearchService">
+		<constructor-arg index="0" ref="mongoDbInstance"/>
+		<constructor-arg index="1" value="$APP{mongo.objectCollection}"/>
+		<constructor-arg index="2" value="$APP{mongo.xpathCollection}"/>
+	</bean>
+	
+	<bean id="defaultController" class="com.thoughtstream.audit.web.controller.DefaultController">
+		<constructor-arg index="0" ref="mongoAuditMessageStoringService"/>
+		<constructor-arg index="1" ref="mongoBasedAuditSearchService"/>
 	</bean>
 
 	<mvc:annotation-driven/>

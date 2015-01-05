@@ -23,7 +23,7 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
   var mongoProps: MongodProps = null
 
-  val serviceEndpoint = ("localhost", 27017)
+  val serviceEndpoint = ("localhost", 27227)
   val databaseName = "AuditObjects"
 
   val mongoDbInstance = new MongoDBInstance(serviceEndpoint, databaseName)

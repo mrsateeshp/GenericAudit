@@ -1,6 +1,5 @@
 package com.thoughtstream.audit.web.controller;
 
-import com.thoughtstream.audit.bean.MongoDBInstance;
 import com.thoughtstream.audit.process.FancyTreeProcessor;
 import com.thoughtstream.audit.service.*;
 import com.thoughtstream.audit.web.dto.AuditSaveResponse;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import scala.Tuple2;
 import scala.collection.*;
 import scala.collection.Iterable;
 
@@ -28,11 +26,15 @@ import java.util.List;
 public class DefaultController {
 
     static final Logger logger = LoggerFactory.getLogger(DefaultController.class);
-    private MongoBasedAuditSearchService auditSearchService =
-            new MongoBasedAuditSearchService(new MongoDBInstance(new Tuple2<String, Object>("localhost", 27017), "AuditObjects"), "defCollection", "xpaths");
 
-    private MongoAuditMessageStoringService auditSavingService =
-            new MongoAuditMessageStoringService(new MongoDBInstance(new Tuple2<String, Object>("localhost", 27017), "AuditObjects"), "defCollection", "xpaths");
+    private AuditSearchService<MongoDBSearchResult> auditSearchService;
+
+    private AuditMessageStoringService<AuditSaveRequest<XMLDataSnapshot>> auditSavingService;
+
+    public DefaultController(AuditMessageStoringService<AuditSaveRequest<XMLDataSnapshot>> auditSavingService, AuditSearchService<MongoDBSearchResult> auditSearchService) {
+        this.auditSearchService = auditSearchService;
+        this.auditSavingService = auditSavingService;
+    }
 
     @RequestMapping(value = {"/search"}, method = RequestMethod.GET)
     public String serach() {

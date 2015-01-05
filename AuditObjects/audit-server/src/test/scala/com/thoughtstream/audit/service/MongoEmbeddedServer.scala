@@ -9,7 +9,7 @@ import com.github.simplyscala.MongoEmbedDatabase
  */
 
 object MongoEmbeddedServer extends MongoEmbedDatabase{
-  val mongoProps = mongoStart(27017)
+  val mongoProps = mongoStart(27227)
   def start(){}
 
 //  def stop(){ mongoStop(mongoProps)}

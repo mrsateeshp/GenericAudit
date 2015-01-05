@@ -15,7 +15,7 @@ import play.api.libs.json.Json
  * @since 13/11/2014
  */
 class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter with StrictLogging{
-  val serviceEndpoint = ("localhost",27017)
+  val serviceEndpoint = ("localhost",27227)
   val databaseName = "AuditObjects"
 
   val mongoDbInstance = new MongoDBInstance(serviceEndpoint,databaseName)
