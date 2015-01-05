@@ -7,7 +7,7 @@ Demo instance:
 ==============
 (response might be slow for the first request as heroku stops the server if it is not used for some time)
 
-a sample audit message can be sent @ https://generic-audit.herokuapp.com/testAuditMessage  (just click submit)
+sample audit message can be sent @ https://generic-audit.herokuapp.com/testAuditMessage  (just click submit)
 
 and search can be performed @ https://generic-audit.herokuapp.com/search (enter /user in Search Query textarea)
 
