@@ -40,9 +40,8 @@
 	</bean>
 
 	<bean id="mongoDbInstance" class="com.thoughtstream.audit.bean.MongoDBInstance">
-		<constructor-arg index="0" value="$APP{mongo.server.host}"/>
-		<constructor-arg index="1" value="$APP{mongo.server.port}"/>
-		<constructor-arg index="2" value="$APP{mongo.dbName}"/>
+		<constructor-arg index="0" value="$APP{mongo.connectionUrl}"/>
+		<constructor-arg index="1" value="$APP{mongo.dbName}"/>
 	</bean>
 
 	<bean id="mongoAuditMessageStoringService" class="com.thoughtstream.audit.service.MongoAuditMessageStoringService">

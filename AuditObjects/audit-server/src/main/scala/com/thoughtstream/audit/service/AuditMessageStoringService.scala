@@ -5,9 +5,9 @@ import java.util.Date
 import com.mongodb.BasicDBObject
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.bean.MongoDBInstance
-import com.thoughtstream.audit.process.{XpathToJsonConverter, JsonAuditMessageProcessor}
+import com.thoughtstream.audit.process.{JsonAuditMessageProcessor, XpathToJsonConverter}
 
-import scala.xml.{XML, Elem}
+import scala.xml.{Elem, XML}
 
 /**
  *
@@ -22,11 +22,11 @@ trait AuditMessageStoringService[A] {
 import com.mongodb.casbah.Imports._
 
 case class MongoAuditMessageStoringService(mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection", xpathCollectionName: String = "xpaths") extends AuditMessageStoringService[AuditSaveRequest[XMLDataSnapshot]] {
-  private val serviceEndpoint: (String, Int) = mongoDbInstance.serviceEndpoint
-  private val databaseName: String = mongoDbInstance.databaseName
-
-  private val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
-  private val xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(xpathCollectionName)
+  val uri = MongoClientURI(mongoDbInstance.connectionString)
+  val mongoClient = MongoClient(uri)
+  val mongoDb = mongoClient(mongoDbInstance.databaseName)
+  private val collection = mongoDb(collectionName)
+  private val xpathCollection = mongoDb(xpathCollectionName)
 
   //todo: enhance it to derive entity type and use to relate to collection
   override def save(request: AuditSaveRequest[XMLDataSnapshot]): Unit = {

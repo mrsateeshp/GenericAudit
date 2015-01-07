@@ -38,10 +38,11 @@ class MongoBasedAuditSearchService
 (mongoDbInstance: MongoDBInstance, collectionName: String = "defCollection", xpathCollectionName: String = "xpaths")
   extends AuditSearchService[MongoDBSearchResult] with JsonQueryBuilder {
 
-  private val serviceEndpoint = mongoDbInstance.serviceEndpoint
-  private val databaseName = mongoDbInstance.databaseName
-  private val collection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(collectionName)
-  private val xpathCollection = MongoConnection(serviceEndpoint._1, serviceEndpoint._2)(databaseName)(xpathCollectionName)
+  val uri = MongoClientURI(mongoDbInstance.connectionString)
+  val mongoClient = MongoClient(uri)
+  val mongoDb = mongoClient(mongoDbInstance.databaseName)
+  private val collection = mongoDb(collectionName)
+  private val xpathCollection = mongoDb(xpathCollectionName)
 
   override def search(query: SearchQuery, fromDate: Date, _toDate: Date, startIndex: Int, noOfResults: Int): Iterable[MongoDBSearchResult] = {
     val jsonQuery = build(query)

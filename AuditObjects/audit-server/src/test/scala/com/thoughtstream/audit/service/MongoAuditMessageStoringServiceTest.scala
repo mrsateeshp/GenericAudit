@@ -4,7 +4,6 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoConnection
 import com.mongodb.util.JSON
 import com.thoughtstream.audit.MongoEmbeddedServer
-import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.{FancyTreeProcessor, JsonAuditMessageProcessor}
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -19,7 +18,7 @@ class MongoAuditMessageStoringServiceTest extends FunSuite with BeforeAndAfter w
   val serviceEndpoint = ("localhost",27227)
   val databaseName = "AuditObjects"
 
-  val mongoDbInstance = new MongoDBInstance(serviceEndpoint,databaseName)
+  val mongoDbInstance = MongoEmbeddedServer.mongoDbInstance
 
   before {
     logger.debug("starting the server")

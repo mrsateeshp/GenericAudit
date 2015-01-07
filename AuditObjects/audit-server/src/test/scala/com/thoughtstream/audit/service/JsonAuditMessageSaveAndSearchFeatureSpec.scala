@@ -3,7 +3,6 @@ package com.thoughtstream.audit.service
 import com.github.simplyscala.MongodProps
 import com.mongodb.casbah.{MongoCollection, MongoConnection}
 import com.thoughtstream.audit.MongoEmbeddedServer
-import com.thoughtstream.audit.bean.MongoDBInstance
 import com.thoughtstream.audit.process.JsonAuditMessageProcessor._
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{BeforeAndAfter, FeatureSpec, GivenWhenThen}
@@ -26,8 +25,7 @@ class JsonAuditMessageSaveAndSearchFeatureSpec
 
   val serviceEndpoint = ("localhost", 27227)
   val databaseName = "AuditObjects"
-
-  val mongoDbInstance = new MongoDBInstance(serviceEndpoint, databaseName)
+  val mongoDbInstance = MongoEmbeddedServer.mongoDbInstance
   val jsonStore = MongoAuditMessageStoringService(mongoDbInstance)
   val searchService = new MongoBasedAuditSearchService(mongoDbInstance)
   var xpathCollection: MongoCollection = null
